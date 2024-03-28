@@ -31,3 +31,33 @@ It's not exactly time yet, but if you're excited I don't want to stand in the wa
 2. Click the arrow beside the green "Link Project" button and choose "New Project"
 3. I guess now you also have to click "New Project" 🙄
 4. find the "iterative development" template and choose it.
+
+
+## Initial Development (Backend)
+
+1. clone the repository
+2. Create your conda env:
+   ```
+   conda create -n spotitrack python=3.10
+   ```
+4. Enter the .env file, make sure it says **spotitrack**
+5. Create a postgres database for local development:
+    ```
+   createdb spotitrack
+   ```
+6. Install project requirements:
+   ```
+   pip install -r requirements/local.txt
+   ```
+7. Create your own super-user:
+    ```
+    python manage.py createsuperuser
+   ```
+8. Run migrations:
+    ```
+    python manage.py migrate
+    ```
+9. Run server:
+    ```
+    python manage.py runserver
+    ```
