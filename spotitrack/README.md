@@ -1,8 +1,14 @@
-# Ultimate xylomania
+# Spotitrack
 
 ## Frontend development
 
-Open terminal to `xylomania/frontend`. After running `npm install` you can run `npm run autobuild` to update the built files anytime you change frontend files.
+### First
+Open terminal to `spotitrack/frontend`. After running `npm install` you can run `npm run autobuild` to update the built files anytime you change frontend files.
+
+### Added resources to make frontend development easier
+
+- Material UI: https://mui.com/
+  - installed, not used as of yet.
 
 ## Backend development
 
