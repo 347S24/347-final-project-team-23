@@ -13,7 +13,7 @@
 
 Mostly just to make sure you each have access and can pull and push to the repo, add your name here:
 1. Salman Khattak
-1. MeName
+1. Nick Simoncelli
 1. MeName
 1. MineName
 
