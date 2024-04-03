@@ -8,4 +8,4 @@ function Footer() {
   );
 }
 export default Footer;
-// Path: spotitrack/tictactoe/frontend/src/footer/Footer.js
+// Path: spotitrack/spotitrack/frontend/src/footer/Footer.js

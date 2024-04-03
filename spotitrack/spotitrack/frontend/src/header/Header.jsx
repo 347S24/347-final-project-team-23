@@ -9,4 +9,4 @@ function Header() {
 }
 
 export default Header;
-// Path: spotitrack/tictactoe/frontend/src/header/Header.js
+// Path: spotitrack/spotitrack/frontend/src/header/Header.js

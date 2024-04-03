@@ -11,4 +11,4 @@ function Main() {
 }
 
 export default Main;
-// Path: spotitrack/tictactoe/frontend/src/header/Header.js
+// Path: spotitrack/spotitrack/frontend/src/header/Header.js

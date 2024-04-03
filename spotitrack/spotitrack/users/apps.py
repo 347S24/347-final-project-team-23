@@ -5,9 +5,9 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UsersConfig(AppConfig):
-    name = "tictactoe.users"
+    name = "spotitrack.users"
     verbose_name = _("Users")
 
     def ready(self):
         with contextlib.suppress(ImportError):
-            import tictactoe.users.signals  # noqa: F401
+            import spotitrack.users.signals  # noqa: F401
