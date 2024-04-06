@@ -2,6 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import djangoLogo from './assets/django.svg'
 import viteLogo from './assets/vite.svg'
+import spotitrackLogo from './assets/logo.svg'
 import './App.css'
 
 // function App({username}) {
@@ -21,6 +22,9 @@ function App() {
         </a>
         <a href="https://www.djangoproject.com/" target="_blank">
           <img src={djangoLogo} className="logo" alt="Django logo" />
+        </a>
+        <a target="_blank">
+          <img src={spotitrackLogo} className="logo" alt="SpotiTrack logo" />
         </a>
       </div>
       <h1>Vite + React + Django</h1>

@@ -1,11 +1,19 @@
 // starter for main page
 
+import About from "./About";
+import Does from "./Does";
+import HeroSection from "./HeroSection";
+import Join from "./Join";
+import Use from "./Use";
+
 function Main() {
   return (
     <div>
-      <h1>SpotiTrack</h1>
-      <h2>Track your Spotify listening habits</h2>
-      <p>Log in to get started!</p>
+      <HeroSection />
+      <About />
+      <Use />
+      <Does />
+      <Join />
     </div>
   );
 }

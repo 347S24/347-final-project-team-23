@@ -1,9 +1,17 @@
 // Starter for header component
 
+import logo from "./../assets/logo.svg";
+
+
 function Header() {
   return (
-    <header>
-      <h1>SpotiTrack</h1>
+    <header className={"header-section"}>
+      <img
+      className={'header-logo'}
+                src={logo}
+                alt="SpotiTrack logo"
+                width={'50px'}
+                />
     </header>
   );
 }
