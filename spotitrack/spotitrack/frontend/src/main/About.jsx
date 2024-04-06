@@ -1,6 +1,7 @@
+import "./styles.css";
 function About() {
   return (
-    <div>
+    <div id="About">
     <h1>
       Discover Spotitrack - Your Playlist Time Machine
     </h1>

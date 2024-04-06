@@ -1,5 +1,5 @@
 // starter for main page
-
+import "./styles.css";
 import About from "./About";
 import Does from "./Does";
 import HeroSection from "./HeroSection";
@@ -8,7 +8,7 @@ import Use from "./Use";
 
 function Main() {
   return (
-    <div>
+    <div className="Main">
       <HeroSection />
       <About />
       <Use />

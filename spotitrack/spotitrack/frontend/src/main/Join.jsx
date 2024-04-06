@@ -1,8 +1,10 @@
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import "./styles.css";
+
 function Join() {
   return (
-    <div>
+    <div id='Join'>
       <h1>Why Join the Spotitrack Symphony?</h1>
       <List>
         <ListItem>

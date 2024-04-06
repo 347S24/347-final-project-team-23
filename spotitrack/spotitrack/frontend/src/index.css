@@ -1,16 +1,22 @@
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* background-color: #242424; */
+  background-color: #1c1c1c;
+
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  margin: 0 auto;
+  text-align: center;
 }
 
 a {
@@ -65,4 +71,11 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+
+.logo {
+  height: 4rem;
+  will-change: filter;
+  transition: filter 300ms;
 }

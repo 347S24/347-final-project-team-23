@@ -1,0 +1,75 @@
+.top-nav {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+
+/*  NAV BAR CSS  */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  z-index: 1;
+}
+
+.nav-item-top {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0 25px 0;
+  color: #ffffff;
+}
+
+a {
+  color: inherit;
+}
+a:link {
+  text-decoration: none;
+}
+a:hover {
+  color:chartreuse;
+}
+
+
+/* .bottom-bar {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+} */
+/*create responsiveness for top nav-bar*/
+/* @media (max-width: 768px) {
+  .top-bar {
+      height: unset;
+      gap: 10px;
+      display: none;
+  }
+.nav-item-top {
+      padding: 0;
+
+  }
+}
+.nav-item-bottom {
+  display: flex;
+  cursor: pointer;
+  align-items: flex-start;
+}
+
+.top-bar a:hover {
+  color: var(--primary-green)
+}
+.bottom-bar a:hover {
+  color: var(--primary-yellow);
+}
+p {
+  color: inherit;
+  padding-bottom: 8px;
+  align-self: flex-start;
+}
+li.bottom-bar {
+  padding-bottom: 8px;
+} */

@@ -1,6 +1,8 @@
+import "./styles.css";
+
 function Does() {
   return (
-    <div>
+    <div id="Does">
       <h1>your Music Diary</h1>
       <p>
       Spotitrack isn&apos;t just about music; it&apos;s about moments. It&apos;s about that
