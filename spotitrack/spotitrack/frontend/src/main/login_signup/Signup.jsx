@@ -47,6 +47,7 @@ function Signup() {
           variant="outlined"
           FullWidth
           color='secondary'
+          required
         >
           <InputLabel
           htmlFor="outlined-adornment-username">Username
@@ -63,6 +64,7 @@ function Signup() {
           sx={{ m: 1, width: '25ch' }}
           variant="outlined"
           color='secondary'
+          required
           >
             <InputLabel
             htmlFor="outlined-adornment-first-name">First Name
@@ -78,6 +80,7 @@ function Signup() {
           sx={{ m: 1, width: '25ch' }}
           variant="outlined"
           color='secondary'
+          required
           >
             <InputLabel
             htmlFor="outlined-adornment-last-name">Last Name
@@ -96,6 +99,7 @@ function Signup() {
             sx={{ m: 1, width: '25ch' }}
             variant="outlined"
             color='secondary'
+            required
           >
             <InputLabel
             htmlFor="outlined-adornment-password">Password
@@ -123,6 +127,7 @@ function Signup() {
             sx={{ m: 1, width: '25ch' }}
             variant="outlined"
             color='secondary'
+            required
           >
             <InputLabel
             htmlFor="outlined-adornment-confirm-password">Confirm Password
@@ -152,6 +157,7 @@ function Signup() {
           variant="outlined"
           FullWidth
           color='secondary'
+          required
         >
           <InputLabel
           htmlFor="outlined-adornment-email">email
