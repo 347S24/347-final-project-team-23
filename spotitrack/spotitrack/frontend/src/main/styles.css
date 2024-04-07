@@ -1,5 +1,5 @@
 /*    PAGE SPACING    */
-#HeroSection {
+#Home {
   padding-top: 15rem;
   padding-bottom: 25rem;
   background: radial-gradient(ellipse at 125% 0%,#ceec97, #7ceb7c, #5febb9);
@@ -9,11 +9,11 @@
   padding-bottom: 20rem;
   background-color: #8a8a8a;
 }
-#Use {
+#Utility {
   padding-top: 5rem;
   padding-bottom: 20rem;
 }
-#Does {
+#Pitch {
   padding-top: 5rem;
   padding-bottom: 20rem;
   background-color: rgb(47, 80, 69);
@@ -22,6 +22,7 @@
   padding-top: 5rem;
   padding-top: 20rem;
 }
+
 
 /*    TYPOGRAPHY     */
 :root {

@@ -1,18 +1,18 @@
 // starter for main page
 import "./styles.css";
 import About from "./About";
-import Does from "./Does";
-import HeroSection from "./HeroSection";
+import Pitch from "./Pitch";
+import Home from "./Home";
 import Join from "./Join";
-import Use from "./Use";
+import Utility from "./Utility";
 
 function Main() {
   return (
     <div className="Main">
-      <HeroSection />
+      <Home />
       <About />
-      <Use />
-      <Does />
+      <Utility />
+      <Pitch />
       <Join />
     </div>
   );
