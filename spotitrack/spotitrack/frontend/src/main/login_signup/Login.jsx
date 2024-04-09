@@ -9,7 +9,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Alert from '@mui/material/Alert';
+import Alert from '@mui/material/Alert'
 
 import './../../index.css'
 import './style.css'
@@ -23,10 +23,16 @@ function Login() {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const [username, setUsername] = React.useState('');
-  const handleSetUsername = (event) => setUsername(event.target.value);
+  const handleSetUsername = (event) => {
+    setUsername(event.target.value);
+    console.log(username);
+  }
 
   const [password, setPassword] = React.useState('');
-  const handleSetPassword = (event) => setPassword(event.target.value);
+  const handleSetPassword = (event) => {
+    setPassword(event.target.value);
+    console.log(password);
+  }
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
@@ -34,7 +40,9 @@ function Login() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    if (username === '' || password === '') {
+    // regex if password is less than 8 characters or does not contain a number or special character
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+    if (username === '' || password === '' || !password.match(passwordRegex)) {
       handleSetError();
       return;
     } else {
@@ -62,7 +70,7 @@ function Login() {
           autoComplete="off"
         >
           <div className='form'>
-          <FormControl
+          <FormControl onChange={handleSetUsername}
             sx={{ m:1, width: '52ch' }}
             variant="outlined"
             FullWidth
@@ -79,7 +87,7 @@ function Login() {
             />
           </FormControl>
 
-          <FormControl
+          <FormControl onChange={handleSetPassword}
             sx={{ m: 1, width: '52ch' }}
             variant="outlined"
             color='secondary'
@@ -103,6 +111,7 @@ function Login() {
                   </IconButton>
                 </InputAdornment>
               }
+              autoComplete="current-password"
               label="Password"
             />
           </FormControl>

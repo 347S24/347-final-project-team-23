@@ -22,6 +22,57 @@ function Signup() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+  const [error, setError] = React.useState(false);
+  const handleSetError = () => setError((error) => !error);
+
+  const [username, setUsername] = React.useState('');
+  const handleSetUsername = (event) => {
+    setUsername(event.target.value);
+    console.log("username: " + username);
+  }
+
+  const [firstName, setFirstName] = React.useState('');
+  const handleSetFirstName = (event) => {
+    setFirstName(event.target.value);
+    console.log("first name: " + firstName);
+  }
+
+  const [lastName, setLastName] = React.useState('');
+  const handleSetLastName = (event) => {
+    setLastName(event.target.value);
+    console.log("last name: " + lastName);
+  }
+
+  const [password, setPassword] = React.useState('');
+  const handleSetPassword = (event) => {
+    setPassword(event.target.value);
+    console.log("password " + password);
+  }
+
+  const [verifyPassword, setVerifyPassword] = React.useState('');
+  const handleVerifyPassword = (event) => {
+    setVerifyPassword(event.target.value);
+    console.log("verify password: " + verifyPassword);
+  }
+
+  const [email, setEmail] = React.useState('');
+  const handleSetEmail = (event) => {
+    setEmail(event.target.value);
+    console.log("email: " + email);
+  }
+
+  const handleFormSubmission = (event) => {
+    event.preventDefault();
+    console.log("username: " + username);
+    console.log("first name: " + firstName);
+    console.log("last name: " + lastName);
+    console.log("password: " + password);
+    console.log("verify password: " + verifyPassword);
+    console.log("email: " + email);
+    console.log("form submitted");
+  }
+
+
 
   return (
     <div id='Login'>
@@ -32,6 +83,7 @@ function Signup() {
       id="login-header">
       Sign up
     </Typography>
+    <form onSubmit={handleFormSubmission}>
     <Box
       component="form"
       sx={{
@@ -42,7 +94,8 @@ function Signup() {
     >
       <div className='form'>
 
-      <FormControl
+
+      <FormControl onChange={handleSetUsername}  // This is the username field
           sx={{ m:1, width: '52ch' }}
           variant="outlined"
           FullWidth
@@ -60,7 +113,7 @@ function Signup() {
         </FormControl>
 
       <div className='name'>
-        <FormControl
+        <FormControl onChange={handleSetFirstName}  // This is the first name field
           sx={{ m: 1, width: '25ch' }}
           variant="outlined"
           color='secondary'
@@ -76,7 +129,7 @@ function Signup() {
             />
           </FormControl>
 
-          <FormControl
+          <FormControl onChange={handleSetLastName}  // This is the last name field
           sx={{ m: 1, width: '25ch' }}
           variant="outlined"
           color='secondary'
@@ -95,7 +148,7 @@ function Signup() {
 
         {/* Password field with show/hide password */}
         <div className='password'>
-          <FormControl
+          <FormControl  onChange={handleSetPassword}  // This is the password field
             sx={{ m: 1, width: '25ch' }}
             variant="outlined"
             color='secondary'
@@ -105,6 +158,7 @@ function Signup() {
             htmlFor="outlined-adornment-password">Password
             </InputLabel>
             <OutlinedInput
+              autoComplete="new-password"
               id="outlined-adornment-password"
               type={showPassword ? 'text' : 'password'}
               endAdornment={
@@ -123,7 +177,8 @@ function Signup() {
             />
           </FormControl>
 
-          <FormControl
+          <FormControl onChange={handleVerifyPassword}  // This is the confirm password field
+            autoComplete="new-password"
             sx={{ m: 1, width: '25ch' }}
             variant="outlined"
             color='secondary'
@@ -133,8 +188,9 @@ function Signup() {
             htmlFor="outlined-adornment-confirm-password">Confirm Password
             </InputLabel>
             <OutlinedInput
+              autoComplete="new-password"
               id="outlined-adornment-confirm-password"
-              type={showPassword ? 'text' : 'Confirm Password'}
+              type={showPassword ? 'text' : 'password'}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
@@ -152,7 +208,7 @@ function Signup() {
           </FormControl>
         </div>
 
-        <FormControl
+        <FormControl onChange={handleSetEmail}  // This is the email field
           sx={{ m:1, width: '52ch' }}
           variant="outlined"
           FullWidth
@@ -163,6 +219,7 @@ function Signup() {
           htmlFor="outlined-adornment-email">email
           </InputLabel>
           <OutlinedInput
+            autoComplete='email'
             id="outlined-adornment-email"
             type="email"
             label="email"
@@ -173,7 +230,9 @@ function Signup() {
 
       </div>
     </Box>
+    </form>
     <Button
+    // onClick={handleFormSubmission}
     id="signup_button"
     variant="contained"
     href="/confirm_email"
