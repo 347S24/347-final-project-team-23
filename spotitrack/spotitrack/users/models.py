@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.db import models
 
 
 class User(AbstractUser):
@@ -15,7 +16,10 @@ class User(AbstractUser):
     name = CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore[assignment]
     last_name = None  # type: ignore[assignment]
-
+    # username = CharField(max_length=200)
+    # password = CharField(max_length=200)
+    # oAuthToken = CharField(max_length=500)
+    
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
 
@@ -24,3 +28,9 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
+    
+class Playlist(models.Model):
+    title = CharField(max_length=200)
+    owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
+    # when added?
+    # spotify identifier spotifyuri # e.g. spotify:playlist:sdfbjhsgkeawjesgrd
