@@ -56,7 +56,7 @@ def get_user_playlists(request, username: str):
     
     return playlist_info
 
-@api.get("/tracks")
+@api.get("/tracks/{username}/{playlist_id}")
 def get_playlist_tracks(request, username: str, playlist_id: str):
     # Replace these with your own client ID and client secret
     client_id = 'e4991986fa1e43369b4a732ebc1aea45'
@@ -67,7 +67,7 @@ def get_playlist_tracks(request, username: str, playlist_id: str):
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
     # Get tracks from the playlist
-    results = sp.playlist_tracks(username, playlist_id)
+    results = sp.playlist_tracks(playlist_id)
 
     # Extract relevant information from tracks
     tracks_info = []
