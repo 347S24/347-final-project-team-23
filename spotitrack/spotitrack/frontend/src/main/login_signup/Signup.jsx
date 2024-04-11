@@ -16,19 +16,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 function Signup() {
 
 
-  fetch('/users/api/user', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username : username, firstName : firstName, lastName : lastName})
-  })
-  .then(response => response.json())
-  .then(data => {
-      console.log('User info: ', data);
-  });
-
-
 
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -86,6 +73,30 @@ function Signup() {
     console.log("verify password: " + verifyPassword);
     console.log("email: " + email);
     console.log("form submitted");
+
+
+    fetch('/users/api/user', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({  username, first_name : firstName, last_name : lastName})
+      })
+
+      .then(response => response.json())
+      .then(data => {
+          console.log('User info: ', data);
+          // fetch('/users/api/user', {
+          //   method: 'POST',
+          //   headers: {
+          //       'Content-Type': 'application/json',
+          //   },
+          //   body: JSON.stringify({ email : email, password : password})
+          //   })
+      });
+
+
+
   }
 
 

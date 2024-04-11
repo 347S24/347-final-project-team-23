@@ -14,12 +14,12 @@ class User(AbstractUser):
 
     # First and last name do not cover name patterns around the globe
     name = CharField(_("Name of User"), blank=True, max_length=255)
-    first_name = None  # type: ignore[assignment]
-    last_name = None  # type: ignore[assignment]
+    first_name = CharField(blank=True,null=True)  # type: ignore[assignment]
+    last_name = CharField(blank=True,null=True)  # type: ignore[assignment]
     # username = CharField(max_length=200)
     # password = CharField(max_length=200)
     # oAuthToken = CharField(max_length=500)
-    
+
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
 
@@ -28,7 +28,7 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
-    
+
 class Playlist(models.Model):
     title = CharField(max_length=200)
     owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
