@@ -46,7 +46,8 @@ function Login() {
       handleSetError();
       return;
     } else {
-      console.log('Form submitted');
+      // navigate to the home page
+      window.location.href = '/dashboard';
     }
   }
 

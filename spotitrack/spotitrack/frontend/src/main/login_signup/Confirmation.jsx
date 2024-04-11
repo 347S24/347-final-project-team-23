@@ -12,6 +12,8 @@ function Confirmation() {
     const data = await res.json()
     console.log(data)
   },[])
+
+
   return (
     // create a page that prompts the user to check their email for a confirmation link
     <div id='confirmation'>
