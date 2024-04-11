@@ -165,18 +165,16 @@ def get_playlist_tracks(request, username: str, playlist_id: str):
 from models import User
 from ninja import Schema
 from typing import List
-class UserIn(Schema):
-    username: str
-    first_name: str
-    last_name: str
+import json
 
 @api.post("/user")
-def create_user(request, palyoad: UserIn):
-    user = User.objects.create(**palyoad.dict())
-    return {"username": user.name}
-
-@api.get("/user/{username}", response=UserIn)
-def get_user(request, username: str):
-    user = get_object_or_404(User, name=username)
+def create_user(request, file):
+    data = json.load(file)
+    user = User.objects.create(data)
     return user
+
+# @api.get("/user/{username}", response=UserIn)
+# def get_user(request, username: str):
+#     user = get_object_or_404(User, name=username)
+#     return user
 
