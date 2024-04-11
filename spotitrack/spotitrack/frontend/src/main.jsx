@@ -14,6 +14,7 @@ import NavigationBar from './header/NavigationBar.jsx';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Signup from './main/login_signup/Signup.jsx';
 import Confirmation from './main/login_signup/Confirmation.jsx';
+import Dashboard from './main/Dashboard.jsx';
 
 const theme = createTheme({
   palette: {
@@ -60,6 +61,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/signup" element={<Signup />} />
           <Route path="/confirm_email" element={<Confirmation />} />
           <Route path="/" element={<Main />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
         <Footer />
       </Router>
