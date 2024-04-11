@@ -61,3 +61,16 @@ It's not exactly time yet, but if you're excited I don't want to stand in the wa
     ```
     python manage.py runserver
     ```
+
+## Frontend Development
+
+1. Run Frontend:
+   ```
+   npm run autobuild
+   ```
+
+2. Run Backend too...
+   ```
+   django manage.py runserver
+   ```
+

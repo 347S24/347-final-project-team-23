@@ -161,3 +161,22 @@ def get_playlist_tracks(request, username: str, playlist_id: str):
         })
 
     return tracks_info
+
+from models import User 
+from ninja import Schema
+from typing import List
+class UserIn(Schema):
+    username: str
+    first_name: str
+    last_name: str
+
+@api.post("/user")
+def create_user(request, palyoad: UserIn):
+    user = User.objects.create(**palyoad.dict())
+    return {"username": user.name}
+
+@api.get("/user/{username}", response=UserIn)
+def get_user(request, username: str):
+    user = get_object_or_404(User, name=username)
+    return user
+
