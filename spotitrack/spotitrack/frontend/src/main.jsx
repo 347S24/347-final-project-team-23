@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
 import './index.css'
 import Footer from './footer/Footer.jsx'
 import Home from './main/Home';
@@ -15,6 +14,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Signup from './main/login_signup/Signup.jsx';
 import Confirmation from './main/login_signup/Confirmation.jsx';
 import Dashboard from './main/Dashboard.jsx';
+
 
 const theme = createTheme({
   palette: {

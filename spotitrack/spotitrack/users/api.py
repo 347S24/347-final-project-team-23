@@ -10,8 +10,8 @@ api = NinjaAPI()
 @api.get("/authorization")
 def request_user_authorization(request):
     """
-    Requests authorization from the user to access Spotify resources.
-    
+    Requests authorization from thze user to access Spotify resources.
+
     Parameters:
     - client_id (str): The Client ID generated after registering your application.
     - redirect_uri (str): The URI to redirect to after the user grants or denies permission.
@@ -46,7 +46,7 @@ def request_user_authorization(request):
 def handle_callback(request, code: str, state: str):
     """
     Handles the callback after the user authorizes the app and returns the authorization code.
-    
+
     Parameters:
     - code (str): The authorization code returned from the Spotify authorization request.
     - state (str): The value of the state parameter supplied in the request.
@@ -83,7 +83,7 @@ def handle_callback(request, code: str, state: str):
 @api.get("/about")
 def get_artist_info(request, artist_name):
     # Replace these with your own client ID and client secret
-    
+
     client_id = 'e4991986fa1e43369b4a732ebc1aea45'
     client_secret = 'a6bb2acb683b4e7b9894edd80fc4ac60'
     # Authenticate with Spotify API
@@ -104,7 +104,7 @@ def get_artist_info(request, artist_name):
         }
     else:
         return None
-    
+
 
 
 @api.get("/playlist")
@@ -119,7 +119,7 @@ def get_user_playlists(request, username: str):
 
     # Get user's playlists
     playlists = sp.user_playlists(username)
-    
+
     # Extract relevant information from playlists
     playlist_info = []
     for playlist in playlists['items']:
@@ -129,7 +129,7 @@ def get_user_playlists(request, username: str):
             'owner': playlist['owner']['display_name'],
             'tracks': playlist['tracks']['total']
         })
-    
+
     return playlist_info
 
 

@@ -12,7 +12,7 @@ from .views import HomeView
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="index.html"), name="home"),
-    path("", HomeView.as_view(), name="home"),
+    # path("", HomeView.as_view(), name="home"),
     path(
         "about/",
         TemplateView.as_view(template_name="pages/about.html"),

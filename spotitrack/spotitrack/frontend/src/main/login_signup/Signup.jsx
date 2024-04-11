@@ -15,6 +15,25 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 function Signup() {
 
+
+  // fetch('/users/api/signup', {
+  //     method: 'POST',
+  //     headers: {
+  //         'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ zipCode: zipCode })
+  // })
+  // .then(response => response.json())
+  // .then(data => {
+  //     console.log('Weather Data:', data);
+  // .catch(error => {
+  //     console.error('Error:', error);
+  //     document.getElementById('weatherResult').textContent = 'Invalid ZIP Code';
+  // });
+
+
+
+
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -230,16 +249,17 @@ function Signup() {
 
       </div>
     </Box>
-    </form>
     <Button
     // onClick={handleFormSubmission}
     id="signup_button"
     variant="contained"
-    href="/confirm_email"
+    // href="/confirm_email"
     color="secondary"
+    type="submit"
     size="large">
       Sign Up
     </Button>
+    </form>
     <p id="signup-prompt">
       Already have an account? <a href='/login' id="inline-link">Login</a>
     </p>

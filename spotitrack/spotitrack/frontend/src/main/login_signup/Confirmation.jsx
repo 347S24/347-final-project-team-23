@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 
 
 function Confirmation() {
+
+
   useEffect(async () => {
     const artist = 'DMX'
     const res = await fetch(`/users/api/about?artist_name=${artist}`)
