@@ -16,20 +16,17 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 function Signup() {
 
 
-  // fetch('/users/api/signup', {
-  //     method: 'POST',
-  //     headers: {
-  //         'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ zipCode: zipCode })
-  // })
-  // .then(response => response.json())
-  // .then(data => {
-  //     console.log('Weather Data:', data);
-  // .catch(error => {
-  //     console.error('Error:', error);
-  //     document.getElementById('weatherResult').textContent = 'Invalid ZIP Code';
-  // });
+  fetch('/users/api/user', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username : username, firstName : firstName, lastName : lastName})
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('User info: ', data);
+  });
 
 
 

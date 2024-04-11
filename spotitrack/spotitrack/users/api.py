@@ -162,7 +162,7 @@ def get_playlist_tracks(request, username: str, playlist_id: str):
 
     return tracks_info
 
-from models import User
+from .models import User
 from ninja import Schema
 from typing import List
 import json
