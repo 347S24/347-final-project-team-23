@@ -40,9 +40,22 @@ function Login() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    // regex if password is less than 8 characters or does not contain a number or special character
-    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
-    if (username === '' || password === '' || !password.match(passwordRegex)) {
+
+    fetch(`/users/api/user/${username}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('User info: ', data);
+    })
+    .catch(error => {
+        console.error('Error fetching user:', error);
+    });
+
+    if (username === '' || password === '') {
       handleSetError();
       return;
     } else {

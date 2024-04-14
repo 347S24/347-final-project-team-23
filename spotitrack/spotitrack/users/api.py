@@ -183,6 +183,8 @@ class UserIn(Schema):
     username: str
     first_name: str = ''
     last_name: str = ''
+    password: str = ''
+    email: str = ''
 
 
 @api.post("/user")
@@ -190,8 +192,10 @@ def create_user(request, payload: UserIn):
     print(payload.username)
     print(payload.first_name)
     print(payload.last_name)
+    print(payload.password)
+    print(payload.email)
     user = User.objects.create(**payload.dict())
-    return {"username": user.name}
+    return {"users name": user.name}
 
 
 @api.get("/user/{username}", response=UserIn)

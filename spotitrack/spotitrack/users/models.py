@@ -13,11 +13,11 @@ class User(AbstractUser):
     """
 
     # First and last name do not cover name patterns around the globe
-    name = CharField(_("Name of User"), blank=True, max_length=255)
+    username = CharField(max_length=200)
     first_name = CharField(blank=True,null=True)  # type: ignore[assignment]
     last_name = CharField(blank=True,null=True)  # type: ignore[assignment]
-    # username = CharField(max_length=200)
-    # password = CharField(max_length=200)
+    name = CharField(_("Name of User"), blank=True, max_length=255)
+    password = CharField(max_length=200)
     # oAuthToken = CharField(max_length=500)
 
     def get_absolute_url(self) -> str:
