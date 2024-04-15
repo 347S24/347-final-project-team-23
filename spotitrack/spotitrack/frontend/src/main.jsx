@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css'
@@ -46,11 +46,12 @@ const theme = createTheme({
   },
 });
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+function App() {
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  return (
     <ThemeProvider theme={theme}>
       <Router>
-        {/* <Header /> */}
         <NavigationBar />
         <Routes>
           <Route path="/home" element={<Home />} />
@@ -66,5 +67,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Footer />
       </Router>
     </ThemeProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>,
-)
+);

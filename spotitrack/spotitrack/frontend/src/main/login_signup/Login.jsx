@@ -10,11 +10,15 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Alert from '@mui/material/Alert'
+import { useNavigate } from 'react-router-dom';
 
 import './../../index.css'
 import './style.css'
 
 function Login() {
+
+  const navigate = useNavigate();
+
 
   const [error, setError] = React.useState(false);
   const handleSetError = () => setError((error) => !error);
@@ -34,6 +38,8 @@ function Login() {
     console.log(password);
   }
 
+  // const [user, setUser] = React.useState(null);
+
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -41,26 +47,24 @@ function Login() {
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
-    fetch(`/users/api/user/${username}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('User info: ', data);
-    })
-    .catch(error => {
-        console.error('Error fetching user:', error);
-    });
-
     if (username === '' || password === '') {
       handleSetError();
       return;
     } else {
-      // navigate to the home page
-      window.location.href = '/dashboard';
+      fetch(`/users/api/user/${username}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log('User info: ', data);
+          navigate('/dashboard', { state: { user: data } });
+      })
+      .catch(error => {
+          console.error('Error fetching user:', error);
+      });
     }
   }
 
@@ -138,6 +142,7 @@ function Login() {
           type='submit'
           color="secondary"
           size="large"
+          // href="/dashboard"
         >
           Login
         </Button>
