@@ -51,16 +51,22 @@ function Login() {
       handleSetError();
       return;
     } else {
-      fetch(`/users/api/user/${username}`, {
+      fetch(`/users/api/user/${username}-${password}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          handleSetError();
+          throw new Error('Network response was not ok');
+        }
+        return response.json()
+      })
       .then(data => {
           console.log('User info: ', data);
-          navigate('/dashboard', { state: { user: data } });
+            navigate('/dashboard', { state: { user: data } });
       })
       .catch(error => {
           console.error('Error fetching user:', error);
@@ -142,7 +148,6 @@ function Login() {
           type='submit'
           color="secondary"
           size="large"
-          // href="/dashboard"
         >
           Login
         </Button>

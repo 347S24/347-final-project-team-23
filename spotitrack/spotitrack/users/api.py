@@ -198,7 +198,7 @@ def create_user(request, payload: UserIn):
     return {"users name": user.name}
 
 
-@api.get("/user/{username}", response=UserIn)
+@api.get("/user/{username}-{password}", response=UserIn)
 def get_user(request, username: str, password: str):
     user = get_object_or_404(User, username=username, password=password)
     return user
