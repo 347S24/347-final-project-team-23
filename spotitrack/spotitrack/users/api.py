@@ -24,7 +24,7 @@ def request_user_authorization(request):
     - str: The authorization URL to redirect the user to.
     """
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    redirect_uri = "http://127.0.0.1:8000/about/"
+    redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
     scope = "user-read-private user-read-email"
 
     # Construct query parameters
@@ -45,8 +45,9 @@ def request_user_authorization(request):
     return authorization_url
 
 
-@api.get("/callback")
-def handle_callback(request, code: str, state: str):
+@api.get("/callback/")
+def handle_callback(request, code: str):
+    print('\n\n\n\n\ngot the callback from oauth')
     """
     Handles the callback after the user authorizes the app and returns the authorization code.
 
@@ -59,7 +60,7 @@ def handle_callback(request, code: str, state: str):
     """
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
     client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-    redirect_uri = "http://127.0.0.1:8000/about/"  # Make sure this matches the redirect URI used in authorization request
+    redirect_uri = "http://127.0.0.1:8000/users/api/callback/"  # Make sure this matches the redirect URI used in authorization request
 
     # Exchange authorization code for access token
     token_url = "https://accounts.spotify.com/api/token"
@@ -77,6 +78,16 @@ def handle_callback(request, code: str, state: str):
     # Parse response and return access token information
     if response.status_code == 200:
         token_data = response.json()
+
+        # TEST EXAMPLE OF MAKING A CALL USING USER ACCESS TOKEN
+        print('\n\n\n\n\ntoken_data')
+        print(token_data)
+        test_headers = {
+            "Authorization": 'Bearer '+token_data['access_token']
+        }
+        test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
+        print(test_response.json())
+        # request.user.oauthtoken = token_data
         return token_data
     else:
         return {
