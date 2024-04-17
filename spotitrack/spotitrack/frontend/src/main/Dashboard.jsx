@@ -9,19 +9,37 @@
     const data = await res.json()
     console.log(data)
   }, [])
-
-  useEffect (async () => {
-    const username = 'Sacr3d'
-    const playlist_id = '7AqyxOJ8sodMKovIVWqvDV'
-    const res = await fetch(`/users/api/tracks/${username}/${playlist_id}?username=${username}/playlist_id=${playlist_id}`)
-    const data = await res.json()
-    console.log(data)
-  }, [])
   */
   import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 
 
   function Dashboard() {
+
+
+    useEffect (async () => {
+      const username = 'Sacr3d'
+      const res = await fetch(`/users/api/playlist?username=${username}`)
+      const data = await res.json()
+      console.log(data)
+    }, [])
+
+    // useEffect(() => {
+    //   const username = 'Sacr3d';
+    //   const playlist_id = '7AqyxOJ8sodMKovIVWqvDV';
+    //   const fetchUrl = `/users/api/tracks/${username}/${playlist_id}?username=${username}&playlist_id=${playlist_id}`;
+
+    //   const fetchData = async () => {
+    //       const res = await fetch(fetchUrl);
+    //       const data = await res.json();
+    //       console.log(data); // Log full data to see the structure
+    //       if (data.tracks && data.tracks.length > 0) {
+    //           console.log(data.tracks[0].album.artUrl);
+    //       }
+    //   };
+
+  //     fetchData();
+  // }, []);
 
 
     const location = useLocation();
