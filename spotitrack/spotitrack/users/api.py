@@ -76,6 +76,8 @@ def handle_callback(request, code: str):
 
     # Parse response and return access token information
     if response.status_code == 200:
+        
+        print('THE USER', request.user)
         token_data = response.json()
 
         # TEST EXAMPLE OF MAKING A CALL USING USER ACCESS TOKEN
@@ -88,6 +90,7 @@ def handle_callback(request, code: str):
         #print(test_response.json())
         request.user.access_token = token_data['access_token']
         request.user.refresh_token = token_data['refresh_token']
+        request.user.save()
         return token_data
     else:
         return {
