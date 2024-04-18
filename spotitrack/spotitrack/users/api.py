@@ -81,12 +81,13 @@ def handle_callback(request, code: str):
         # TEST EXAMPLE OF MAKING A CALL USING USER ACCESS TOKEN
         #print('\n\n\n\n\ntoken_data')
         #print(token_data)
-        test_headers = {
-            "Authorization": 'Bearer ' + token_data['access_token']
-        }
-        test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
-        print(test_response.json())
-        # request.user.oauthtoken = token_data
+        #test_headers = {
+        #    "Authorization": 'Bearer ' + token_data['access_token']
+        #}
+        #test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
+        #print(test_response.json())
+        request.user.access_token = token_data['access_token']
+        request.user.refresh_token = token_data['refresh_token']
         return token_data
     else:
         return {
