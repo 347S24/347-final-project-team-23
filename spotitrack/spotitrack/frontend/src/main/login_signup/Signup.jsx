@@ -110,7 +110,7 @@ function Signup() {
       lastName == "" ||
       password === "" ||
       !password.match(passwordRegex) ||
-      password !== verifyPassword ||
+      // password !== verifyPassword ||
       email === ""
     ) {
       handleSetError();
