@@ -33,5 +33,9 @@ class User(AbstractUser):
 class Playlist(models.Model):
     title = CharField(max_length=200)
     owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
-    # when added?
+    timestamp = models.DateTimeField(auto_now_add=True)
+    contents = CharField(max_length=20000)
+
+
+
     # spotify identifier spotifyuri # e.g. spotify:playlist:sdfbjhsgkeawjesgrd
