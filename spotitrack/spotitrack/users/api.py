@@ -102,7 +102,7 @@ def handle_callback(request, code: str):
 # THIS API CALL REFRESHES THE ACCESS TOKEN
 @api.get("/refresh/")
 def refresh_token(request):
-    refresh_token = request.GET.get('refresh_token')
+    refresh_token = request.user.refresh_token
     print('REFRESH', refresh_token)
     # Replace these with your own client ID and client secret
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
