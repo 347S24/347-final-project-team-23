@@ -12,6 +12,7 @@
   */
   import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import Button from '@material-ui/core/Button';
 
 
   function Dashboard() {
@@ -67,6 +68,7 @@ import { useEffect } from 'react';
         <p>your email is {user.email}</p>
         <p>your username is {user.username}</p>
         <p>your password is {user.password}</p>
+        <Button variant="contained" color="primary" href="/login">Logout</Button>
       </div>
     );
   }
