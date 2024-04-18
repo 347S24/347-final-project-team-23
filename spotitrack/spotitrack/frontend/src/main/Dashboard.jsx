@@ -61,6 +61,29 @@ import Button from "@mui/material/Button";
       return <div>No user data available. Please login again.</div>;
     }
 
+    const callOAuth = async () => {
+      try {
+          // Call the API endpoint to get the authorization URL
+          const response = await fetch('/users/api/authorization', {
+              method: 'GET', // Method itself is GET by default, so this is optional
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          });
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          let authorizationUrl = await response.text();
+          authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
+          console.log('Authorization URL:', authorizationUrl);
+
+          // Redirect the user to the authorization URL obtained from the API
+          window.location = authorizationUrl;
+      } catch (error) {
+          console.error('Failed to fetch authorization URL:', error);
+      }
+  };
+
     return (
       <div>
         <h1>Welcome, {user.first_name}!</h1>
@@ -68,7 +91,11 @@ import Button from "@mui/material/Button";
         <p>your email is {user.email}</p>
         <p>your username is {user.username}</p>
         <p>your password is {user.password}</p>
-        <Button variant="contained" color="primary" href="/login">Logout</Button>
+        <Button variant="contained"
+        color="primary"
+        onClick={callOAuth}>
+        oAuth
+        </Button>
       </div>
     );
   }
