@@ -8,7 +8,7 @@ import base64
 
 api = NinjaAPI()
 
-
+# THIS REQUESTIONS AN AUTHORAZATION TOKEN TO TURN INTO AN ACCESS TOKEN
 @api.get("/authorization")
 def request_user_authorization(request):
     """
@@ -44,10 +44,9 @@ def request_user_authorization(request):
 
     return authorization_url
 
-
+# THIS IS THE CALLBACK FUNCTION TO TURN A AUTH CODE INTO AN ACCESS TOKEN
 @api.get("/callback/")
 def handle_callback(request, code: str):
-    print('\n\n\n\n\ngot the callback from oauth')
     """
     Handles the callback after the user authorizes the app and returns the authorization code.
 
@@ -80,10 +79,10 @@ def handle_callback(request, code: str):
         token_data = response.json()
 
         # TEST EXAMPLE OF MAKING A CALL USING USER ACCESS TOKEN
-        print('\n\n\n\n\ntoken_data')
-        print(token_data)
+        #print('\n\n\n\n\ntoken_data')
+        #print(token_data)
         test_headers = {
-            "Authorization": 'Bearer '+token_data['access_token']
+            "Authorization": 'Bearer ' + token_data['access_token']
         }
         test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
         print(test_response.json())
@@ -93,6 +92,46 @@ def handle_callback(request, code: str):
         return {
             "error": "Failed to exchange authorization code for access token."
         }, response.status_code
+
+
+
+# THIS API CALL REFRESHES THE ACCESS TOKEN
+@api.get("/refresh/")
+def refresh_token(request):
+    refresh_token = request.GET.get('refresh_token')
+    print('REFRESH', refresh_token)
+    # Replace these with your own client ID and client secret
+    client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+
+    # Construct request payload
+    auth_payload = {
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh_token
+    }
+
+    # Construct headers with basic authentication
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic ' + base64.b64encode((client_id + ':' + client_secret).encode()).decode()
+    }
+
+    # Make POST request to Spotify API
+    response = requests.post('https://accounts.spotify.com/api/token', data=auth_payload, headers=headers)
+
+    # Check if request was successful
+    if response.status_code == 200:
+        token_data = response.json()
+        access_token = token_data['access_token']
+        refreshed_refresh_token = token_data.get('refresh_token', refresh_token)
+        return {
+            'access_token': access_token,
+            'refresh_token': refreshed_refresh_token
+        }
+    else:
+        return {
+            'error': 'Failed to refresh access token'
+        }
 
 
 @api.get("/about")
