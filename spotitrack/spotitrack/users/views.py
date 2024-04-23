@@ -6,7 +6,7 @@ from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
 
-from spotitrack.users.models import User
+from spotitrack.users.models import User, Playlist
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
@@ -43,3 +43,38 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 
 user_redirect_view = UserRedirectView.as_view()
+
+class PlaylistDetailView(LoginRequiredMixin, DetailView):
+    model = Playlist
+    slug_field = "name"
+    slug_url_kwarg = "name"
+
+
+playlist_detail_view = PlaylistDetailView.as_view()
+
+
+class PlaylistUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Playlist
+    fields = ["name"]
+    success_message = _("Information successfully updated")
+
+    def get_success_url(self):
+        # for mypy to know that the user is authenticated
+        assert self.request.playlist.is_authenticated
+        return self.request.playlist.get_absolute_url()
+
+    def get_object(self):
+        return self.request.playlist
+
+
+playlist_update_view = PlaylistUpdateView.as_view()
+
+
+class PlaylistRedirectView(LoginRequiredMixin, RedirectView):
+    permanent = False
+
+    def get_redirect_url(self):
+        return reverse("playlist:detail", kwargs={"name": self.request.playlist.name})
+
+
+playlist_redirect_view = PlaylistRedirectView.as_view()

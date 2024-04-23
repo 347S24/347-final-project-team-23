@@ -37,6 +37,13 @@ class Playlist(models.Model):
     id = CharField(max_length=200, primary_key=True)
     #tracks = CharField(max_length=20000, blank=True, null=True)
 
+    def get_absolute_url(self) -> str:
+        """Get URL for playlist's detail view.
 
+        Returns:
+            str: URL for playlist detail.
+
+        """
+        return reverse("playlist:detail", kwargs={"name": self.name})
 
     # spotify identifier spotifyuri # e.g. spotify:playlist:sdfbjhsgkeawjesgrd
