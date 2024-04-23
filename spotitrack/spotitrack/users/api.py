@@ -103,7 +103,7 @@ def handle_callback(request, code: str):
 @api.get("/refresh/")
 def refresh_token(request):
     refresh_token = request.user.refresh_token
-    print('REFRESH', refresh_token)
+    #print('REFRESH', refresh_token)
     # Replace these with your own client ID and client secret
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
     client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
@@ -192,6 +192,10 @@ def get_user_playlists(request, username: str):
                 "tracks": playlist["tracks"]["total"],
             }
         )
+        request.playlist.name = playlist_info['name']
+        request.playlist.id = playlist_info['id']
+        request.playlist.owner = playlist_info['owner']
+        request.playlist.save()
 
     return playlist_info
 

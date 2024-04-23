@@ -31,10 +31,11 @@ class User(AbstractUser):
         return reverse("users:detail", kwargs={"username": self.username})
 
 class Playlist(models.Model):
-    title = CharField(max_length=200)
+    name = CharField(max_length=200)
     owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    contents = CharField(max_length=20000, blank=True, null=True)
+    #timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    id = CharField(max_length=200, primary_key=True)
+    #tracks = CharField(max_length=20000, blank=True, null=True)
 
 
 
