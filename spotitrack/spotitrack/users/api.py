@@ -5,8 +5,13 @@ import requests
 from ninja import NinjaAPI
 import requests
 import base64
+from .models import User
+from ninja import Schema
+from typing import List
 
 api = NinjaAPI()
+
+# user = User.objects.create()
 
 # THIS REQUESTIONS AN AUTHORAZATION TOKEN TO TURN INTO AN ACCESS TOKEN
 @api.get("/authorization")
@@ -178,7 +183,7 @@ def get_user_playlists(request, username: str):
     )
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     try:
-        playlists = sp.user_playlists(username)
+        playlists = sp.user_playlists(username, limit=50)
         playlist_info = [
             {
                 "name": playlist["name"],
@@ -226,11 +231,6 @@ def get_playlist_tracks(request, username: str, playlist_id: str):
     return tracks_info
 
 
-from .models import User
-from ninja import Schema
-from typing import List
-
-
 class UserIn(Schema):
     username: str
     first_name: str = ''
@@ -247,6 +247,7 @@ def create_user(request, payload: UserIn):
     print(payload.password)
     print(payload.email)
     user = User.objects.create(**payload.dict())
+    # user = User.objects.update(**payload.dict())
     return {"users name": user.name}
 
 

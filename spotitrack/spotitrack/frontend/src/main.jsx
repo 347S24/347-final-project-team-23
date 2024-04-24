@@ -45,6 +45,27 @@ function App() {
         styleOverrides: {
           root: {
             margin: '8px', // Spacing around buttons
+            '&:focus': {
+              outline: 'none'  // Removes outline on focus
+            },
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            '&:focus': {
+              outline: 'none'  // Removes outline on focus
+            },
+          },
+        },
+      },
+      MuiCardActionArea: {
+        styleOverrides: {
+          root: {
+            '&:focus': {
+              outline: 'none'  // Removes outline on focus
+            },
           },
         },
       },
@@ -55,6 +76,7 @@ function App() {
           },
         },
       },
+      // You can add additional components here if needed
     },
   }), [mode]);
 

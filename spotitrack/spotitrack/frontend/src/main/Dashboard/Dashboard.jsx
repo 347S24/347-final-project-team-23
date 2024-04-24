@@ -1,8 +1,9 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ThemeProvider, Box } from '@mui/system';
-import { Grid, Typography, Button, Card, CardContent, CardMedia } from '@mui/material';
+import { Grid, Typography, Button, Card, CardContent, CardMedia, CardActionArea, CardActions, IconButton, Stack } from '@mui/material';
 import PropTypes from 'prop-types';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 
 import './dashboard.css';
@@ -27,6 +28,9 @@ import './../../index.css'
     const last_name = user.last_name;
     const email = user.email;
     const password = user.password;
+    const token = user.access_token;
+    console.log("token: ", token);
+
 
     if (!user) {
       // Handle the scenario when no user data is passed
@@ -41,48 +45,6 @@ import './../../index.css'
 
 
     // API calls
-
-
-
-    // useEffect(() => {
-    //   async function postData() {
-    //     console.log("playlists to send: ", playlists)
-    //     if (playlists.length > 0) {  // Ensure there are playlists to send
-    //       try {
-    //         const response = await fetch(`/users/api/user/${username}/load_playlists`, {
-    //           method: 'POST',
-    //           headers: {
-    //             'Content-Type': 'application/json'
-    //           },
-    //           body: JSON.stringify({playlists})  // Send the playlists array as JSON
-    //         });
-    //         const data = await response.json(); // Assuming the server sends back some response
-    //         console.log("post data: ", data);
-    //       } catch (error) {
-    //         console.error('Failed to post playlists:', error);
-    //       }
-    //     }
-    //   }
-
-    //   postData();  // Call postData only if playlists have been set
-    // }, [playlists, username]);
-
-    // useEffect(() => {
-    //   const username = 'Sacr3d';
-    //   const playlist_id = '7AqyxOJ8sodMKovIVWqvDV';
-    //   const fetchUrl = `/users/api/tracks/${username}/${playlist_id}?username=${username}&playlist_id=${playlist_id}`;
-
-    //   const fetchData = async () => {
-    //       const res = await fetch(fetchUrl);
-    //       const data = await res.json();
-    //       console.log(data); // Log full data to see the structure
-    //       if (data.tracks && data.tracks.length > 0) {
-    //           console.log(data.tracks[0].album.artUrl);
-    //       }
-    //   };
-
-    //   fetchData();
-    // }, []);
 
     const callOAuth = async () => {
       try {
@@ -121,6 +83,41 @@ import './../../index.css'
       fetchData();
     }, []);
 
+    //  FETCH ALL PLAYLISTS -- NEED ACCESS TOKEN
+    // async function fetchAllPlaylists(accessToken) {
+    //   let url = 'https://api.spotify.com/v1/me/playlists?limit=50';
+    //   let playlists = [];
+
+    //   while (url) {
+    //     const response = await fetch(url, {
+    //       headers: { 'Authorization': `Bearer ${accessToken}` }
+    //     });
+    //     const data = await response.json();
+    //     playlists = playlists.concat(data.items);
+    //     url = data.next;  // Update the URL to the next page of playlists, or null if there are no more pages
+    //   }
+
+    //   return playlists;
+    // }
+
+
+    // EXAMPLE FETCH DETAILED PLAYLIST -- NEED TO IMPLENENT
+    // useEffect(() => {
+    //   const username = 'Sacr3d';
+    //   const playlist_id = '7AqyxOJ8sodMKovIVWqvDV';
+    //   const fetchUrl = `/users/api/tracks/${username}/${playlist_id}?username=${username}&playlist_id=${playlist_id}`;
+
+    //   const fetchData = async () => {
+    //       const res = await fetch(fetchUrl);
+    //       const data = await res.json();
+    //       console.log(data); // Log full data to see the structure
+    //       if (data.tracks && data.tracks.length > 0) {
+    //           console.log(data.tracks[0].album.artUrl);
+    //       }
+    //   };
+
+    //   fetchData();
+    // }, []);
 
 
     return (
@@ -158,6 +155,7 @@ import './../../index.css'
                 {playlists.map((playlist, index) => (
                   <Grid item xs={2} sm={4} md={4} key={index}>
                   <Card>
+                  <CardActionArea>
                       <CardMedia
                         component="img"
                         height="140"
@@ -173,14 +171,27 @@ import './../../index.css'
                                     flexDirection: 'column',
                                     justifyContent: 'flex-end'
                                  }}>
+                        <Stack>
                         <Typography variant="body2" color="secondary.light">
                           {playlist.tracks} tracks
                         </Typography>
                         <Typography variant="body2" color="secondary">
                           by {playlist.owner}
                         </Typography>
+                        </Stack>
                         </Box>
                       </CardContent>
+                      </CardActionArea>
+                      <CardActions sx={{
+                                        bgcolor: 'black'
+                                        }}>
+                        <Button size="small" color="primary">
+                          track
+                        </Button>
+                        <IconButton aria-label="favorite" size="small" color="primary">
+                            <FavoriteBorderIcon />
+                        </IconButton>
+                      </CardActions>
                     </Card>
                   </Grid>
                 ))}
