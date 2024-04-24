@@ -30,7 +30,7 @@ def request_user_authorization(request):
     """
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
     redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
-    scope = "user-read-private user-read-email"
+    scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative"
 
     # Construct query parameters
     params = {
@@ -171,11 +171,11 @@ def get_artist_info(request, artist_name):
         return None
 
 
-@api.get("/playlist/{username}")
-def get_user_playlists(request, username: str):
+@api.get("/playlist")
+def get_user_playlists(request):
     # Replace these with your own client ID and client secret
-    client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+    # client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    # client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
 
     # Authenticate with Spotify API
     client_credentials_manager = SpotifyClientCredentials(

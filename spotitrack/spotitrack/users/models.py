@@ -32,22 +32,21 @@ class User(AbstractUser):
 
 
 class Playlist(models.Model):
-    name = models.CharField(max_length=200)
-    owner = models.ForeignKey('User', related_name='playlists', null=True, on_delete=models.CASCADE)
-    spotify_id = models.CharField(max_length=200, unique=True, null=True)
-    tracks = models.IntegerField(default=0)
-    timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
+    name = CharField(max_length=200)
+    #owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
+    owner = CharField(max_length=200)
+    #timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    id = CharField(max_length=200, primary_key=True)
+    #tracks = CharField(max_length=20000, blank=True, null=True)
     def get_absolute_url(self) -> str:
-        """Get URL for playlist's detail view.
+        """Get URL for user's detail view.
 
         Returns:
-            str: URL for playlist detail.
+            str: URL for user detail.
 
         """
         return reverse("playlist:detail", kwargs={"name": self.name})
+
+
 
     # spotify identifier spotifyuri # e.g. spotify:playlist:sdfbjhsgkeawjesgrd
