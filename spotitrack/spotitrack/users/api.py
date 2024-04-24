@@ -5,8 +5,10 @@ import requests
 from ninja import NinjaAPI
 import requests
 import base64
+from spotitrack.users.models import Playlist
 
 api = NinjaAPI()
+
 
 # THIS REQUESTIONS AN AUTHORAZATION TOKEN TO TURN INTO AN ACCESS TOKEN
 @api.get("/authorization")
@@ -25,7 +27,7 @@ def request_user_authorization(request):
     """
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
     redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
-    scope = "user-read-private user-read-email"
+    scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative"
 
     # Construct query parameters
     params = {
@@ -167,37 +169,55 @@ def get_artist_info(request, artist_name):
 
 
 @api.get("/playlist")
-def get_user_playlists(request, username: str):
+def get_user_playlists(request):
     # Replace these with your own client ID and client secret
-    client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+    # client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    # client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
 
-    # Authenticate with Spotify API
-    client_credentials_manager = SpotifyClientCredentials(
-        client_id=client_id, client_secret=client_secret
-    )
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    # # Authenticate with Spotify API
+    # client_credentials_manager = SpotifyClientCredentials(
+    #     client_id=client_id, client_secret=client_secret
+    # )
+    # sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-    # Get user's playlists
-    playlists = sp.user_playlists(username)
+    user = request.user
+    access_token = user.access_token
 
-    # Extract relevant information from playlists
-    playlist_info = []
-    for playlist in playlists["items"]:
-        playlist_info.append(
-            {
-                "name": playlist["name"],
-                "id": playlist["id"],
-                "owner": playlist["owner"]["display_name"],
-                "tracks": playlist["tracks"]["total"],
-            }
-        )
-        request.playlist.name = playlist_info['name']
-        request.playlist.id = playlist_info['id']
-        request.playlist.owner = playlist_info['owner']
-        request.playlist.save()
+    headers = {
+            "Authorization": 'Bearer ' + access_token
+        }
+    response = requests.get('https://api.spotify.com/v1/me/playlists', headers=headers)
+    if response.status_code == 200:
+        playlist_data = response.json()
+        # Loop over the json and get out the specific items we need for the playlist model
+        playlist_info = []
+        for playlist in playlist_data['items']:
+            owner = playlist['owner']['display_name']
+            playlist_id = playlist['id']
+            playlist_name = playlist['name']
+            
+            playlist_info.append({
+                'owner': owner,
+                'playlist_id': playlist_id,
+                'playlist_name': playlist_name
+            })
 
-    return playlist_info
+            playlist_instance = Playlist(
+                owner = owner,
+                id=playlist_id,
+                name = playlist_name
+            )
+            playlist_instance.save()
+        # loop over the list items from the last for loop and add them to the playlist model
+        # for items in playlist_info:
+        #     request.playlist.name = items['playlist_name']
+        #     request.playlist.id = items['playlist_id']
+        #     request.playlist.owner = items['owner']
+        #     request.playlist.save()
+        return playlist_data
+    else:
+        return response.status_code, {"error": "Failed to fetch user playlists"}
+
 
 
 @api.get("/tracks/{username}/{playlist_id}")
