@@ -1,8 +1,15 @@
-import React, { useState } from 'react'
-import ReactDOM from 'react-dom'
+import React, { useState, useMemo } from 'react';
+import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './index.css'
-import Footer from './footer/Footer.jsx'
+import CssBaseline from '@mui/material/CssBaseline'; // Helps to reset CSS and supports dark mode
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { Typography } from '@mui/material';
+import './index.css';
+
+// Components
+import Footer from './footer/Footer.jsx';
 import Home from './main/Home';
 import About from './main/About';
 import Utility from './main/Utility';
@@ -10,59 +17,62 @@ import Pitch from './main/Pitch';
 import Main from './main/Main';
 import Login from './main/login_signup/Login.jsx';
 import NavigationBar from './header/NavigationBar.jsx';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
 import Signup from './main/login_signup/Signup.jsx';
 import Confirmation from './main/login_signup/Confirmation.jsx';
-import Dashboard from './main/Dashboard.jsx';
-
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      /*  It's daerk grey right now  */
-      main: '#3c3c3c',
-      accent: '##1c1c1c'
-    },
-    secondary: {
-      /*  It's green right now  */
-      main: '#67c65c',
-      accent: '#9cc65c',
-      analog: '#5cc686'
-    },
-    warning: {
-      main: '#F0803C',
-      accent: '#f03c51',
-      analog: '#f0db3c'
-    },
-    error: {
-      main: '#D64550',
-      accent: '#d6459a',
-      analog: '#d68145'
-    },
-    white: {
-      main: '#E6E6EA',
-      accent: '#eaeae6',
-    }
-  },
-});
+import Dashboard from './main/Dashboard/Dashboard.jsx';
 
 function App() {
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mode, setMode] = useState('light'); // Toggle between 'light' and 'dark'
+
+  const theme = useMemo(() => createTheme({
+    palette: {
+      mode,
+      primary: {
+        main: mode === 'light' ? '#67c65c' : '#4caf50', // Light mode green, Dark mode slightly different shade
+      },
+      secondary: {
+        main: mode === 'light' ? '#9C27B0' : '#7b1fa2', // Light mode purple, Dark mode slightly different shade
+      },
+    },
+    typography: {
+      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+      button: {
+        textTransform: 'none', // Removes uppercase styling from buttons
+      },
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            margin: '8px', // Spacing around buttons
+          },
+        },
+      },
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            margin: '8px', // Spacing around text fields
+          },
+        },
+      },
+    },
+  }), [mode]);
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline /> {/* Helps to apply consistent baseline styles */}
       <Router>
         <NavigationBar />
         <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/use" element={<Utility />} />
-          <Route path="/does" element={<Pitch />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="/home" element={<Home theme={theme} />} />
+          <Route path="/about" element={<About theme={theme} />} />
+          <Route path="/use" element={<Utility theme={theme} />} />
+          <Route path="/does" element={<Pitch theme={theme} />} />
+          <Route path="/login" element={<Login theme={theme} />} />
+          <Route path="/signup" element={<Signup theme={theme} />} />
           <Route path="/confirm_email" element={<Confirmation />} />
-          <Route path="/" element={<Main />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Main theme={theme} />} />
+          <Route path="/dashboard" element={<Dashboard theme={theme} />} />
         </Routes>
         <Footer />
       </Router>

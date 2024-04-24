@@ -11,12 +11,19 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Alert from '@mui/material/Alert'
 import { useNavigate } from 'react-router-dom';
+import { ThemeProvider } from "@mui/system";
+import PropTypes from 'prop-types';
 
 import './../../index.css'
 import './style.css'
 
-function Login() {
+Login.propTypes = {
+  theme: PropTypes.object.isRequired,
+};
 
+function Login(props) {
+
+  const theme = props.theme;
   const navigate = useNavigate();
 
 
@@ -76,10 +83,11 @@ function Login() {
 
   return (
     <div id='Login'>
+    <ThemeProvider theme={theme}>
       {error && <Alert severity="error">Username or password incorrect</Alert>}
       <Typography
         variant="h3"
-        color="secondary"
+        color="primary"
         component="h3"
         id="login-header">
         Login
@@ -98,7 +106,7 @@ function Login() {
             sx={{ m:1, width: '52ch' }}
             variant="outlined"
             FullWidth
-            color='secondary'
+            color='primary'
             error = {error}
           >
             <InputLabel
@@ -114,7 +122,7 @@ function Login() {
           <FormControl onChange={handleSetPassword}
             sx={{ m: 1, width: '52ch' }}
             variant="outlined"
-            color='secondary'
+            color='primary'
             error = {error}
           >
             <InputLabel
@@ -146,7 +154,7 @@ function Login() {
           id="login_button"
           variant="contained"
           type='submit'
-          color="secondary"
+          color="primary"
           size="large"
         >
           Login
@@ -155,6 +163,7 @@ function Login() {
       <p id="signup-prompt">
           Don&apos;t have an account? <a href='/signup' id="inline-link">Sign up</a>
         </p>
+        </ThemeProvider>
     </div>
   )
 }

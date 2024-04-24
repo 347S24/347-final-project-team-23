@@ -1,8 +1,16 @@
+import { ThemeProvider } from "@mui/system";
+import PropTypes from 'prop-types';
 import "./styles.css";
 
-function Pitch() {
+Pitch.propTypes = {
+  theme: PropTypes.object.isRequired,
+};
+
+function Pitch(props) {
+  const theme = props.theme;
   return (
     <div id="Pitch">
+    <ThemeProvider theme={theme}>
       <h1>your Music Diary</h1>
       <p>
       Spotitrack isn&apos;t just about music; it&apos;s about moments. It&apos;s
@@ -12,6 +20,7 @@ function Pitch() {
       connect with your past, understand your present, and anticipate the
       future of your musical journey.
       </p>
+      </ThemeProvider>
     </div>
   );
 }

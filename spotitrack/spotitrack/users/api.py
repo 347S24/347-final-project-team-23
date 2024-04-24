@@ -78,7 +78,7 @@ def handle_callback(request, code: str):
 
     # Parse response and return access token information
     if response.status_code == 200:
-        
+
         print('THE USER', request.user)
         token_data = response.json()
 
@@ -280,3 +280,30 @@ def create_user(request, payload: UserIn):
 def get_user(request, username: str, password: str):
     user = get_object_or_404(User, username=username, password=password)
     return user
+
+from ninja import Schema, ModelSchema
+from typing import List
+from .models import Playlist  # Import the Playlist model
+
+class PlaylistIn(Schema):
+    id: str
+    name: str
+    owner: str
+    tracks: int
+
+class PlaylistPayload(Schema):
+    playlists: List[PlaylistIn]
+
+@api.post("/user/{username}/load_playlists")
+def load_playlists(request, username: str, payload: PlaylistPayload):
+    user = get_object_or_404(User, username=username)
+    for pl_data in payload.playlists:
+        Playlist.objects.update_or_create(
+            spotify_id=pl_data.id,
+            defaults={
+                'name': pl_data.name,
+                'owner': user,
+                'tracks': pl_data.tracks
+            }
+        )
+    return {"status": "Playlists loaded successfully"}

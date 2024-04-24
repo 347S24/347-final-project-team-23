@@ -1,10 +1,18 @@
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import { ThemeProvider } from "@mui/system";
+import PropTypes from 'prop-types';
 import "./styles.css";
 
-function Join() {
+Join.propTypes = {
+  theme: PropTypes.object.isRequired,
+};
+
+function Join(props) {
+  const theme = props.theme;
   return (
     <div id='Join'>
+    <ThemeProvider theme={theme}>
       <h1>Why Join the Spotitrack Symphony?</h1>
       <List>
         <ListItem>
@@ -24,6 +32,7 @@ function Join() {
       Ready to watch your music grow? Join Spotitrack today and start your journey
       through the melodies of your life.
       </h3>
+      </ThemeProvider>
     </div>
   );
 }
