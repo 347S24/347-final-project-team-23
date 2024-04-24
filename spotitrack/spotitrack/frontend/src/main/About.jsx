@@ -1,7 +1,21 @@
+import { ThemeProvider } from "@mui/system";
+import PropTypes from 'prop-types';
 import "./styles.css";
-function About() {
+
+
+About.propTypes = {
+  theme: PropTypes.object.isRequired,
+};
+
+
+function About(props) {
+
+  const theme = props.theme;
+
   return (
+
     <div id="About">
+    <ThemeProvider theme={theme}>
     <h1>
       Discover Spotitrack - Your Playlist Time Machine
     </h1>
@@ -13,7 +27,7 @@ function About() {
      every beat, every tune, and every melody shift as your playlists
      grow and transform with you.
      </p>
-
+</ThemeProvider>
     </div>
   );
 }

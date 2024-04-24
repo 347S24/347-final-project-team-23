@@ -76,7 +76,7 @@ def handle_callback(request, code: str):
 
     # Parse response and return access token information
     if response.status_code == 200:
-        
+
         print('THE USER', request.user)
         token_data = response.json()
 
@@ -166,7 +166,7 @@ def get_artist_info(request, artist_name):
         return None
 
 
-@api.get("/playlist")
+@api.get("/playlist/{username}")
 def get_user_playlists(request, username: str):
     # Replace these with your own client ID and client secret
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
@@ -177,25 +177,19 @@ def get_user_playlists(request, username: str):
         client_id=client_id, client_secret=client_secret
     )
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-    # Get user's playlists
-    playlists = sp.user_playlists(username)
-
-    # Extract relevant information from playlists
-    playlist_info = []
-    for playlist in playlists["items"]:
-        playlist_info.append(
+    try:
+        playlists = sp.user_playlists(username)
+        playlist_info = [
             {
                 "name": playlist["name"],
                 "id": playlist["id"],
                 "owner": playlist["owner"]["display_name"],
                 "tracks": playlist["tracks"]["total"],
             }
-        )
-        request.playlist.name = playlist_info['name']
-        request.playlist.id = playlist_info['id']
-        request.playlist.owner = playlist_info['owner']
-        request.playlist.save()
+            for playlist in playlists["items"]
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
     return playlist_info
 
@@ -260,3 +254,30 @@ def create_user(request, payload: UserIn):
 def get_user(request, username: str, password: str):
     user = get_object_or_404(User, username=username, password=password)
     return user
+
+from ninja import Schema, ModelSchema
+from typing import List
+from .models import Playlist  # Import the Playlist model
+
+class PlaylistIn(Schema):
+    id: str
+    name: str
+    owner: str
+    tracks: int
+
+class PlaylistPayload(Schema):
+    playlists: List[PlaylistIn]
+
+@api.post("/user/{username}/load_playlists")
+def load_playlists(request, username: str, payload: PlaylistPayload):
+    user = get_object_or_404(User, username=username)
+    for pl_data in payload.playlists:
+        Playlist.objects.update_or_create(
+            spotify_id=pl_data.id,
+            defaults={
+                'name': pl_data.name,
+                'owner': user,
+                'tracks': pl_data.tracks
+            }
+        )
+    return {"status": "Playlists loaded successfully"}

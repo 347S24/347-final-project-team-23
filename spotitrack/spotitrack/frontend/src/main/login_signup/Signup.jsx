@@ -10,9 +10,18 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Alert } from "@mui/material"; // Import the 'Alert' component from the '@mui/material' package
+import { ThemeProvider } from "@mui/system";
+import PropTypes from 'prop-types';
 
-function Signup() {
+
+
+Signup.propTypes = {
+  theme: PropTypes.object.isRequired,
+};
+
+function Signup(props) {
   // STATE MANAGEMENT FUCNTIONS
+  const theme = props.theme;
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -149,6 +158,7 @@ function Signup() {
 
   return (
     <div id="Login">
+    <ThemeProvider theme={theme}>
       {/* Error handling -- make more robust if time */}
       {(error || usernameError || firstNameError || lastNameError
         || passwordError || verifyPasswordError || emailError)
@@ -157,7 +167,7 @@ function Signup() {
       {/* Heading for the page */}
       <Typography
         variant="h3"
-        color="secondary"
+        color="primary"
         component="h3"
         id="login-header"
       >
@@ -180,7 +190,7 @@ function Signup() {
               sx={{ m: 1, width: "52ch" }}
               variant="outlined"
               FullWidth
-              color="secondary"
+              color="primary"
               required
               error={usernameError}
             >
@@ -200,7 +210,7 @@ function Signup() {
                 onChange={handleSetFirstName} // This is the first name field
                 sx={{ m: 1, width: "25ch" }}
                 variant="outlined"
-                color="secondary"
+                color="primary"
                 required
                 error={firstNameError}
               >
@@ -218,7 +228,7 @@ function Signup() {
                 onChange={handleSetLastName} // This is the last name field
                 sx={{ m: 1, width: "25ch" }}
                 variant="outlined"
-                color="secondary"
+                color="primary"
                 required
                 error={lastNameError}
               >
@@ -239,7 +249,7 @@ function Signup() {
                 onChange={handleSetPassword} // This is the password field
                 sx={{ m: 1, width: "25ch" }}
                 variant="outlined"
-                color="secondary"
+                color="primary"
                 required
                 error={passwordError}
               >
@@ -271,7 +281,7 @@ function Signup() {
                 autoComplete="new-password"
                 sx={{ m: 1, width: "25ch" }}
                 variant="outlined"
-                color="secondary"
+                color="primary"
                 required
                 error={verifyPasswordError}
               >
@@ -304,7 +314,7 @@ function Signup() {
               sx={{ m: 1, width: "52ch" }}
               variant="outlined"
               FullWidth
-              color="secondary"
+              color="primary"
               required
               error={emailError}
             >
@@ -323,7 +333,7 @@ function Signup() {
           id="signup_button"
           variant="contained"
           // href="/confirm_email"
-          color="secondary"
+          color="primary"
           type="submit"
           size="large"
         >
@@ -336,6 +346,7 @@ function Signup() {
           Login
         </a>
       </p>
+      </ThemeProvider>
     </div>
   );
 }
