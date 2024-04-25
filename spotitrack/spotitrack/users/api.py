@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from django.shortcuts import get_object_or_404
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -5,7 +6,7 @@ import requests
 from ninja import NinjaAPI
 import requests
 import base64
-from .models import User
+from .models import User, Playlist
 from ninja import Schema
 from typing import List
 from django.http import JsonResponse
