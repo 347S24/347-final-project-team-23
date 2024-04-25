@@ -93,10 +93,10 @@ def handle_callback(request, code: str):
         #}
         #test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
         #print(test_response.json())
-        # request.user.access_token = token_data['access_token']
-        User.set_access_token(request.user, token_data['access_token'])
-        # request.user.refresh_token = token_data['refresh_token']
-        User.set_refresh_token(request.user, token_data['refresh_token'])
+        request.user.set_access_token(token_data['access_token'])
+        # User.set_access_token(request.user, token_data['access_token'])
+        request.user.set_refresh_token(token_data['refresh_token'])
+        # User.set_refresh_token(request.user, token_data['refresh_token'])
         request.user.save()
         return token_data
     else:

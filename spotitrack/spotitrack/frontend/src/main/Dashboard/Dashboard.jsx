@@ -1,7 +1,8 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ThemeProvider, Box } from '@mui/system';
-import { Grid, Typography, Button, Card, CardContent, CardMedia, CardActionArea, CardActions, IconButton, Stack } from '@mui/material';
+import { Grid, Typography, Button, Card, CardContent, CardMedia,
+  CardActionArea, CardActions, IconButton, Stack } from '@mui/material';
 import PropTypes from 'prop-types';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
