@@ -204,7 +204,7 @@ def get_user_playlists(request):
 
             playlist_instance = Playlist(
                 owner = owner,
-                id=playlist_id,
+                id= str(playlist_id),
                 name = playlist_name
             )
             playlist_instance.save()
@@ -214,7 +214,7 @@ def get_user_playlists(request):
         #     request.playlist.id = items['playlist_id']
         #     request.playlist.owner = items['owner']
         #     request.playlist.save()
-        return playlist_data
+        return playlist_info
     else:
         return response.status_code, {"error": "Failed to fetch user playlists"}
 
