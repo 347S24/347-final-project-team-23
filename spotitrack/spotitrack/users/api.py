@@ -171,11 +171,11 @@ def get_artist_info(request, artist_name):
         return None
 
 
-@api.get("/playlist")
-def get_user_playlists(request):
+@api.get("/playlist/{username}")
+def get_user_playlists(request, username: str):
     # Replace these with your own client ID and client secret
-    # client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    # client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+    client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
 
     # Authenticate with Spotify API
     client_credentials_manager = SpotifyClientCredentials(
