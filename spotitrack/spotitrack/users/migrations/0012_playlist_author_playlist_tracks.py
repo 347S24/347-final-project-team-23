@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name="author",
             field=models.CharField(blank=True, max_length=200, null=True),
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name="playlist",
             name="tracks",
             field=models.IntegerField(blank=True, default=0, null=True),

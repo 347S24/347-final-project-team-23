@@ -22,11 +22,11 @@ class Migration(migrations.Migration):
             name="timestamp",
             field=models.DateTimeField(auto_now_add=True, null=True),
         ),
-        # migrations.AddField(
-        #     model_name="playlist",
-        #     name="tracks",
-        #     field=models.IntegerField(default=0),
-        # ),
+        migrations.AddField(
+            model_name="playlist",
+            name="tracks",
+            field=models.IntegerField(default=0),
+        ),
         migrations.AlterField(
             model_name="playlist",
             name="id",
