@@ -8,13 +8,14 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 
 import './dashboard.css';
-import './../../index.css'
+import '../../index.css'
 import { useNavigate } from 'react-router-dom';
 
 
 
     Dashboard.propTypes = {
       theme: PropTypes.object.isRequired,
+      user: PropTypes.object.isRequired,
     };
 
   function Dashboard(props) {
@@ -26,13 +27,9 @@ import { useNavigate } from 'react-router-dom';
     const location = useLocation();
     const user = location.state ? location.state.user : null;
 
+    console.log("user: ", user);
+
     const username = user.username;
-    const first_name = user.first_name;
-    const last_name = user.last_name;
-    const email = user.email;
-    const password = user.password;
-    const token = user.access_token;
-    console.log("token: ", token);
 
 
     if (!user) {
@@ -41,36 +38,7 @@ import { useNavigate } from 'react-router-dom';
       return <div>No user data available. Please login again.</div>;
     }
 
-    // console.log("Location state:", location.state);
-
-    // console.log("The users information is: ", username, first_name, last_name, email, password)
-
-
-
     // API calls
-
-    const callOAuth = async () => {
-      try {
-          // Call the API endpoint to get the authorization URL
-          const response = await fetch('/users/api/authorization', {
-              method: 'GET', // Method itself is GET by default, so this is optional
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          });
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          let authorizationUrl = await response.text();
-          authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
-          console.log('Authorization URL:', authorizationUrl);
-
-          // Redirect the user to the authorization URL obtained from the API
-          window.location = authorizationUrl;
-      } catch (error) {
-          console.error('Failed to fetch authorization URL:', error);
-      }
-    };
 
     const [playlists, setPlaylists] = useState([]);
 
@@ -151,14 +119,6 @@ import { useNavigate } from 'react-router-dom';
       {/* Header with user information and oauth button */}
       <div id="header">
         <Typography variant="h3">Welcome, {user.first_name}!</Typography>
-        <div id="oauth">
-          <Typography variant="p">Haven&apos;t linked your spotify yet?</Typography>
-          <Button variant="text"
-          color="primary"
-          onClick={callOAuth}>
-          oAuth
-          </Button>
-        </div>
       </div>
 
       {/* Available user palylists */}

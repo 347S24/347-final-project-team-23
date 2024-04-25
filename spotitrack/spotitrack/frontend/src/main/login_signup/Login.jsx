@@ -51,35 +51,69 @@ function Login(props) {
     event.preventDefault();
   };
 
+  // const handleFormSubmit = (event) => {
+  //   event.preventDefault();
+
+  //   if (username === '' || password === '') {
+  //     handleSetError();
+  //     return;
+  //   } else {
+  //     fetch(`/users/api/login/${username}-${password}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         handleSetError();
+  //         throw new Error('Network response was not ok');
+  //       }
+  //       return response.json()
+  //     })
+  //     .then(data => {
+  //         console.log('User info: ', data);
+  //           navigate('/dashboard', { state: { user: data } });
+  //     })
+  //     .catch(error => {
+  //         console.error('Error fetching user:', error);
+  //     });
+  //   }
+  // }
+
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
     if (username === '' || password === '') {
-      handleSetError();
-      return;
-    } else {
-      fetch(`/users/api/user/${username}-${password}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then(response => {
-        if (!response.ok) {
-          handleSetError();
-          throw new Error('Network response was not ok');
-        }
-        return response.json()
-      })
-      .then(data => {
-          console.log('User info: ', data);
-            navigate('/dashboard', { state: { user: data } });
-      })
-      .catch(error => {
-          console.error('Error fetching user:', error);
-      });
+        setError(true);
+        return;
     }
-  }
+    console.log('Logging in with:', username, password);
+    fetch('/users/api/login/', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Login failed');
+        return response.json();
+    })
+    .then(data => {
+        if (data.error) {
+            setError(true);  // Set a state to show an error message
+        } else {
+            navigate('/dashboard', { state: { user: data.user } });
+        }
+    })
+    .catch(error => {
+        console.error('Error during login:', error);
+        setError(true);
+    });
+};
+
+
 
   return (
     <div id='Login'>

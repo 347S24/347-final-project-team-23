@@ -33,12 +33,20 @@ class User(AbstractUser):
         """
         return reverse("users:detail", kwargs={"username": self.username})
 
+
     def set_access_token(self, access_token):
         self.access_token = access_token
         self.save()
+
     def set_refresh_token(self, refresh_token):
         self.refresh_token = refresh_token
         self.save()
+
+    def get_access_token(self):
+        return self.access_token
+    
+    def get_refresh_token(self):
+        return self.refresh_token
 
 
 class Playlist(models.Model):

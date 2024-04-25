@@ -83,6 +83,7 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+    'corsheaders',
 ]
 
 LOCAL_APPS = [
@@ -145,6 +146,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+
+
+
 ]
 
 # STATIC
@@ -287,3 +292,20 @@ SOCIALACCOUNT_FORMS = {"signup": "spotitrack.users.forms.UserSocialSignupForm"}
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+# Session settings
+SESSION_COOKIE_AGE = 86400  # Sessions expire after one day
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Security settings
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # For development only, restrict in production
+
+
+# env things
+environ.Env.read_env()  # Assuming you have a .env file at the root of your project
+
+SPOTIFY_CLIENT_ID = env('SPOTIFY_CLIENT_ID')
+SPOTIFY_CLIENT_SECRET = env('SPOTIFY_CLIENT_SECRET')
