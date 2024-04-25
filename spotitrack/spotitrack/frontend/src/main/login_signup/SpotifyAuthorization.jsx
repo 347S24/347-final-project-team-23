@@ -7,6 +7,7 @@ import './style.css'
 import Button from '@mui/material/Button';
 import { Box } from '@mui/material';
 import SpotifyLogo from './assets/spotify-logo.svg'; // Import the SVG file
+import NavigationBar from '../../header/NavigationBar';
 
 SpotifyAuthorization.propTypes = {
   theme: PropTypes.object.isRequired,
@@ -37,6 +38,7 @@ function SpotifyAuthorization(props) {
 
   return (
     <ThemeProvider theme={props.theme}>
+      <NavigationBar loggedIn={false} banner={true} />
       <Box sx={{
         display: 'flex',
         flexDirection: 'column',
