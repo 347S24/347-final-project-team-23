@@ -1,32 +1,36 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ThemeProvider, Box } from '@mui/system';
-import { Grid, Typography, Button, Card, CardContent, CardMedia } from '@mui/material';
+import { Grid, Typography, Button, Card, CardContent, CardMedia,
+  CardActionArea, CardActions, IconButton, Stack } from '@mui/material';
 import PropTypes from 'prop-types';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 
 import './dashboard.css';
-import './../../index.css'
+import '../../index.css'
+import { useNavigate } from 'react-router-dom';
 
 
 
     Dashboard.propTypes = {
       theme: PropTypes.object.isRequired,
+      user: PropTypes.object.isRequired,
     };
 
   function Dashboard(props) {
     const theme = props.theme;
+    const navigate = useNavigate();
 
 
     // User information and State tracking
     const location = useLocation();
     const user = location.state ? location.state.user : null;
 
+    console.log("user: ", user);
+
     const username = user.username;
-    const first_name = user.first_name;
-    const last_name = user.last_name;
-    const email = user.email;
-    const password = user.password;
+
 
     if (!user) {
       // Handle the scenario when no user data is passed
@@ -34,39 +38,55 @@ import './../../index.css'
       return <div>No user data available. Please login again.</div>;
     }
 
-    // console.log("Location state:", location.state);
-
-    // console.log("The users information is: ", username, first_name, last_name, email, password)
-
-
-
     // API calls
 
+    const [playlists, setPlaylists] = useState([]);
+
+    useEffect(() => {
+      async function fetchData() {
+        const username = 'salmankhattak2017';
+        const res = await fetch(`/users/api/playlist/${username}?username=${username}`);
+        const data = await res.json();
+        setPlaylists(data);
+        console.log("data received from spotify: ", data);
+        return data;
+      }
+      fetchData();
+      handlePlaylistsLoad(playlists);
+    }, []);
 
 
-    // useEffect(() => {
-    //   async function postData() {
-    //     console.log("playlists to send: ", playlists)
-    //     if (playlists.length > 0) {  // Ensure there are playlists to send
-    //       try {
-    //         const response = await fetch(`/users/api/user/${username}/load_playlists`, {
-    //           method: 'POST',
-    //           headers: {
-    //             'Content-Type': 'application/json'
-    //           },
-    //           body: JSON.stringify({playlists})  // Send the playlists array as JSON
-    //         });
-    //         const data = await response.json(); // Assuming the server sends back some response
-    //         console.log("post data: ", data);
-    //       } catch (error) {
-    //         console.error('Failed to post playlists:', error);
-    //       }
-    //     }
+    const handlePlaylistsLoad = async (playlists) => {
+      await fetch(`/users/api/user/${username}/load_playlists`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ playlists })
+      });
+      // Handle response or errors
+      console.log("Playlists loaded successfully!");
+    };
+
+    //  FETCH ALL PLAYLISTS -- NEED ACCESS TOKEN
+    // async function fetchAllPlaylists(accessToken) {
+    //   let url = 'https://api.spotify.com/v1/me/playlists?limit=50';
+    //   let playlists = [];
+
+    //   while (url) {
+    //     const response = await fetch(url, {
+    //       headers: { 'Authorization': `Bearer ${accessToken}` }
+    //     });
+    //     const data = await response.json();
+    //     playlists = playlists.concat(data.items);
+    //     url = data.next;  // Update the URL to the next page of playlists, or null if there are no more pages
     //   }
 
-    //   postData();  // Call postData only if playlists have been set
-    // }, [playlists, username]);
+    //   return playlists;
+    // }
 
+
+    // EXAMPLE FETCH DETAILED PLAYLIST -- NEED TO IMPLENENT
     // useEffect(() => {
     //   const username = 'Sacr3d';
     //   const playlist_id = '7AqyxOJ8sodMKovIVWqvDV';
@@ -84,44 +104,10 @@ import './../../index.css'
     //   fetchData();
     // }, []);
 
-    const callOAuth = async () => {
-      try {
-          // Call the API endpoint to get the authorization URL
-          const response = await fetch('/users/api/authorization', {
-              method: 'GET', // Method itself is GET by default, so this is optional
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          });
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          let authorizationUrl = await response.text();
-          authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
-          console.log('Authorization URL:', authorizationUrl);
 
-          // Redirect the user to the authorization URL obtained from the API
-          window.location = authorizationUrl;
-      } catch (error) {
-          console.error('Failed to fetch authorization URL:', error);
-      }
+    const handlePlaylistClick = (playlistId) => {
+      navigate(`/playlist/${playlistId}`);
     };
-
-    const [playlists, setPlaylists] = useState([]);
-
-    useEffect(() => {
-      async function fetchData() {
-        const username = 'salmankhattak2017';
-        const res = await fetch(`/users/api/playlist/${username}?username=${username}`);
-        const data = await res.json();
-        setPlaylists(data);
-        console.log("data received from spotify: ", data);
-        return data;
-      }
-      fetchData();
-    }, []);
-
-
 
     return (
       <ThemeProvider theme={theme}>
@@ -133,14 +119,6 @@ import './../../index.css'
       {/* Header with user information and oauth button */}
       <div id="header">
         <Typography variant="h3">Welcome, {user.first_name}!</Typography>
-        <div id="oauth">
-          <Typography variant="p">Haven&apos;t linked your spotify yet?</Typography>
-          <Button variant="text"
-          color="primary"
-          onClick={callOAuth}>
-          oAuth
-          </Button>
-        </div>
       </div>
 
       {/* Available user palylists */}
@@ -158,6 +136,7 @@ import './../../index.css'
                 {playlists.map((playlist, index) => (
                   <Grid item xs={2} sm={4} md={4} key={index}>
                   <Card>
+                  <CardActionArea onClick={() => handlePlaylistClick(playlist.id)}>
                       <CardMedia
                         component="img"
                         height="140"
@@ -173,14 +152,27 @@ import './../../index.css'
                                     flexDirection: 'column',
                                     justifyContent: 'flex-end'
                                  }}>
+                        <Stack>
                         <Typography variant="body2" color="secondary.light">
                           {playlist.tracks} tracks
                         </Typography>
                         <Typography variant="body2" color="secondary">
                           by {playlist.owner}
                         </Typography>
+                        </Stack>
                         </Box>
                       </CardContent>
+                      </CardActionArea>
+                      <CardActions sx={{
+                                        bgcolor: 'black'
+                                        }}>
+                        <Button size="small" color="primary">
+                          track
+                        </Button>
+                        <IconButton aria-label="favorite" size="small" color="primary">
+                            <FavoriteBorderIcon />
+                        </IconButton>
+                      </CardActions>
                     </Card>
                   </Grid>
                 ))}

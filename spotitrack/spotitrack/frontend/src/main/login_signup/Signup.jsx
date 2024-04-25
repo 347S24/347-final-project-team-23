@@ -124,18 +124,10 @@ function Signup(props) {
     ) {
       handleSetError();
     } else {
-      console.log("username: " + username);
-      console.log("first name: " + firstName);
-      console.log("last name: " + lastName);
-      console.log("password: " + password);
-      console.log("verify password: " + verifyPassword);
-      console.log("email: " + email);
-      console.log("name: " + name);
-      console.log("form submitted");
 
       // API CALLS TO SERVER
 
-      fetch("/users/api/user", {
+      fetch("/users/api/create_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -332,7 +324,7 @@ function Signup(props) {
           // onClick={handleFormSubmission}
           id="signup_button"
           variant="contained"
-          // href="/confirm_email"
+          href="/authorize_spotify"
           color="primary"
           type="submit"
           size="large"

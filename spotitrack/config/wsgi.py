@@ -1,6 +1,6 @@
 # ruff: noqa
 """
-WSGI config for Ultimate TicTacToe project.
+WSGI config for Spotitrack project.
 
 This module contains the WSGI application used by Django's development server
 and any production WSGI deployments. It should expose a module-level variable

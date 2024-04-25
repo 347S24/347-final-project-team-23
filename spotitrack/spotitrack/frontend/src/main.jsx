@@ -3,9 +3,6 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline'; // Helps to reset CSS and supports dark mode
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import { Typography } from '@mui/material';
 import './index.css';
 
 // Components
@@ -18,7 +15,8 @@ import Main from './main/Main';
 import Login from './main/login_signup/Login.jsx';
 import NavigationBar from './header/NavigationBar.jsx';
 import Signup from './main/login_signup/Signup.jsx';
-import Confirmation from './main/login_signup/Confirmation.jsx';
+import SpotifyAuthorization from './main/login_signup/SpotifyAuthorization.jsx';
+import CompleteSignup from './main/login_signup/CompleteSignup.jsx';
 import Dashboard from './main/Dashboard/Dashboard.jsx';
 
 function App() {
@@ -45,6 +43,27 @@ function App() {
         styleOverrides: {
           root: {
             margin: '8px', // Spacing around buttons
+            '&:focus': {
+              outline: 'none'  // Removes outline on focus
+            },
+          },
+        },
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: {
+            '&:focus': {
+              outline: 'none'  // Removes outline on focus
+            },
+          },
+        },
+      },
+      MuiCardActionArea: {
+        styleOverrides: {
+          root: {
+            '&:focus': {
+              outline: 'none'  // Removes outline on focus
+            },
           },
         },
       },
@@ -55,6 +74,7 @@ function App() {
           },
         },
       },
+      // You can add additional components here if needed
     },
   }), [mode]);
 
@@ -70,9 +90,10 @@ function App() {
           <Route path="/does" element={<Pitch theme={theme} />} />
           <Route path="/login" element={<Login theme={theme} />} />
           <Route path="/signup" element={<Signup theme={theme} />} />
-          <Route path="/confirm_email" element={<Confirmation />} />
+          <Route path="/authorize_spotify" element={<SpotifyAuthorization theme={theme} />} />
           <Route path="/" element={<Main theme={theme} />} />
           <Route path="/dashboard" element={<Dashboard theme={theme} />} />
+          <Route path="/complete_signup" element={<CompleteSignup theme={theme} />} />
         </Routes>
         <Footer />
       </Router>
