@@ -8,6 +8,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import './dashboard.css';
 import './../../index.css'
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -17,6 +18,7 @@ import './../../index.css'
 
   function Dashboard(props) {
     const theme = props.theme;
+    const navigate = useNavigate();
 
 
     // User information and State tracking
@@ -81,7 +83,21 @@ import './../../index.css'
         return data;
       }
       fetchData();
+      handlePlaylistsLoad(playlists);
     }, []);
+
+
+    const handlePlaylistsLoad = async (playlists) => {
+      await fetch(`/users/api/user/${username}/load_playlists`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ playlists })
+      });
+      // Handle response or errors
+      console.log("Playlists loaded successfully!");
+    };
 
     //  FETCH ALL PLAYLISTS -- NEED ACCESS TOKEN
     // async function fetchAllPlaylists(accessToken) {
@@ -120,6 +136,10 @@ import './../../index.css'
     // }, []);
 
 
+    const handlePlaylistClick = (playlistId) => {
+      navigate(`/playlist/${playlistId}`);
+    };
+
     return (
       <ThemeProvider theme={theme}>
       <div id="dashboard">
@@ -155,7 +175,7 @@ import './../../index.css'
                 {playlists.map((playlist, index) => (
                   <Grid item xs={2} sm={4} md={4} key={index}>
                   <Card>
-                  <CardActionArea>
+                  <CardActionArea onClick={() => handlePlaylistClick(playlist.id)}>
                       <CardMedia
                         component="img"
                         height="140"

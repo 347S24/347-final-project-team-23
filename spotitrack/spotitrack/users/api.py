@@ -93,8 +93,10 @@ def handle_callback(request, code: str):
         #}
         #test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
         #print(test_response.json())
-        request.user.access_token = token_data['access_token']
-        request.user.refresh_token = token_data['refresh_token']
+        # request.user.access_token = token_data['access_token']
+        User.set_access_token(request.user, token_data['access_token'])
+        # request.user.refresh_token = token_data['refresh_token']
+        User.set_refresh_token(request.user, token_data['refresh_token'])
         request.user.save()
         return token_data
     else:
@@ -282,3 +284,23 @@ def load_playlists(request, username: str, payload: PlaylistPayload):
             }
         )
     return {"status": "Playlists loaded successfully"}
+
+
+### EXPERIMENTAL INTERNAL API FOR PLAYLIST MANAGEMENT ###
+
+@api.post("/user/{username}/load_playlists")
+def load_playlists(request, username: str, payload: PlaylistPayload):
+    user = get_object_or_404(User, username=username)
+    for pl_data in payload.playlists:
+        Playlist.objects.update_or_create(
+            id=pl_data.id,
+            defaults={
+                'name': pl_data.name,
+                'id': pl_data.id,
+                'owner': user.username,
+                'spotify_owner': pl_data.owner, # assuming owner is a CharField with the username
+                'tracks': pl_data.tracks
+            }
+        )
+    return {"status": "Playlists loaded successfully"}
+

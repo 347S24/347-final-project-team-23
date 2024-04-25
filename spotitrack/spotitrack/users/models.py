@@ -1,8 +1,11 @@
+from ast import In
 from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+from traitlets import default
+from django.db.models import IntegerField
 
 
 class User(AbstractUser):
@@ -30,14 +33,21 @@ class User(AbstractUser):
         """
         return reverse("users:detail", kwargs={"username": self.username})
 
+    def set_access_token(self, access_token):
+        self.access_token = access_token
+        self.save()
+    def set_refresh_token(self, refresh_token):
+        self.refresh_token = refresh_token
+        self.save()
+
 
 class Playlist(models.Model):
     name = CharField(max_length=200)
-    #owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
-    owner = CharField(max_length=200)
-    #timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     id = CharField(max_length=200, primary_key=True)
-    #tracks = CharField(max_length=20000, blank=True, null=True)
+    owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
+    author = CharField(max_length=200, blank=True, null=True)
+    tracks = IntegerField(blank=True, null=True, default=0)
+
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
 
