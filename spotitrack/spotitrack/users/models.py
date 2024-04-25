@@ -54,7 +54,7 @@ class Playlist(models.Model):
     id = CharField(max_length=200, primary_key=True)
     owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
     author = CharField(max_length=200, blank=True, null=True)
-    tracks = IntegerField(blank=True, null=True, default=0)
+    tracks = IntegerField(default=0)
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
