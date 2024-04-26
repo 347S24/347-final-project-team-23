@@ -408,19 +408,22 @@ def get_user_playlists(request):
             owner = playlist['owner']['display_name']
             playlist_id = playlist['id']
             playlist_name = playlist['name']
+            #tracks = playlist_data['tracks']['total']
+        
             
             playlist_info.append({
                 'owner': owner,
                 'playlist_id': playlist_id,
-                'playlist_name': playlist_name
+                'playlist_name': playlist_name,
+                #'tracks': tracks
             })
 
-            playlist_instance = Playlist(
-                owner = owner,
-                id=playlist_id,
-                name = playlist_name
-            )
-            playlist_instance.save()
+            # playlist_instance = Playlist(
+            #     owner = owner,
+            #     id=playlist_id,
+            #     name = playlist_name
+            # )
+            # playlist_instance.save()
         # loop over the list items from the last for loop and add them to the playlist model
         # for items in playlist_info:
         #     request.playlist.name = items['playlist_name']
