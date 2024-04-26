@@ -17,6 +17,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import login
 from django.contrib.auth import authenticate
 from spotitrack.users.models import Playlist
+from ninja import Router
 
 
 
@@ -29,6 +30,7 @@ client_secret = base.SPOTIFY_CLIENT_SECRET
 
 ### API ###
 api = NinjaAPI()
+router = Router()
 
 
 #########################################################################
@@ -43,11 +45,9 @@ def require_authentication(f):
     @wraps(f)
     def decorated_function(request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return JsonResponse({'error': 'User is not authenticated'}, status=401)
+            return JsonResponse({'isAuthenticated': False}, status=200)
         return f(request, *args, **kwargs)
     return decorated_function
-
-
 
 
 #########################################################################
@@ -56,6 +56,9 @@ def require_authentication(f):
 #                           USER API
 #
 #########################################################################
+from .models import User
+from ninja import Schema
+from typing import List
 
 class UserIn(Schema):
     username: str
@@ -67,6 +70,36 @@ class UserIn(Schema):
 class LoginSchema(Schema):
     username: str
     password: str
+
+
+# @api.post("/user")
+# def create_user(request, payload: UserIn):
+#     print(payload.username)
+#     print(payload.first_name)
+#     print(payload.last_name)
+#     print(payload.password)
+#     print(payload.email)
+#     user = User.objects.create(**payload.dict())
+#     return {"users name": user.name}
+
+
+@api.get("/user/{username}-{password}", response=UserIn)
+def get_user(request, username: str, password: str):
+    user = get_object_or_404(User, username=username, password=password)
+    return user
+
+from ninja import Schema, ModelSchema
+from typing import List
+from .models import Playlist  # Import the Playlist model
+
+class PlaylistIn(Schema):
+    id: str
+    name: str
+    owner: str
+    tracks: int
+
+class PlaylistPayload(Schema):
+    playlists: List[PlaylistIn]
 
 
 # @api.post("/create_user")
@@ -86,30 +119,6 @@ def create_user(request, payload: UserIn):
     user.save()
     return {"users name": user.username}
 
-
-# @api.post("/login/")
-# def login_user(request):
-#     username = request.data.get('username')
-#     password = request.data.get('password')
-#     user = authenticate(request, username=username, password=password)
-#     if user is not None:
-#         # Assuming you're using Django's session framework
-#         login(request, user)
-#         return {"message": "User authenticated", "username": username}
-#     else:
-#         return {"error": "Invalid credentials"}, 401
-
-# @api.post("/login/")
-# def login_user(request, data: LoginSchema):
-#     print("logging in")
-#     user = authenticate(request, username=data.username, password=data.password)
-#     print("authenticated")
-#     if user is not None:
-#         print('USER', user.username)
-#         login(request, user)
-#         return user # Success case
-#     else:
-#         return 401  # Error case
 
 @api.post("/login/")
 def login_user(request, data: LoginSchema):
@@ -145,9 +154,8 @@ def login_user(request, data: LoginSchema):
 
 
 
-
-
-@api.post("/logout/")
+@api.get("/logout/")
+@require_authentication
 def logout_user(request):
     logout(request)
     return JsonResponse({"message": "Logged out"})
@@ -162,6 +170,92 @@ def logout_user(request):
 #
 #########################################################################
 
+
+@api.get("/about")
+def get_artist_info(request, artist_name):
+    # Replace these with your own client ID and client secret
+
+    client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+    # Authenticate with Spotify API
+    client_credentials_manager = SpotifyClientCredentials(
+        client_id=client_id, client_secret=client_secret
+    )
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+    # Search for the artist
+    results = sp.search(q="artist:" + artist_name, type="artist")
+    items = results["artists"]["items"]
+
+    if len(items) > 0:
+        artist = items[0]
+        return {
+            "name": artist["name"],
+            "popularity": artist["popularity"],
+            "followers": artist["followers"]["total"],
+            "genres": artist["genres"],
+        }
+    else:
+        return None
+
+
+@api.get("/playlist/{username}")
+@require_authentication
+def get_user_playlists(request, username: str):
+
+    # Authenticate with Spotify API
+    client_credentials_manager = SpotifyClientCredentials(
+        client_id=client_id, client_secret=client_secret
+    )
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    try:
+        playlists = sp.user_playlists(username, limit=50)
+        playlist_info = [
+            {
+                "name": playlist["name"],
+                "id": playlist["id"],
+                "owner": playlist["owner"]["display_name"],
+                "tracks": playlist["tracks"]["total"],
+            }
+            for playlist in playlists["items"]
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return playlist_info
+
+
+
+@api.get("/tracks/{username}/{playlist_id}")
+def get_playlist_tracks(request, username: str, playlist_id: str):
+    # Replace these with your own client ID and client secret
+    client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+
+    # Authenticate with Spotify API
+    client_credentials_manager = SpotifyClientCredentials(
+        client_id=client_id, client_secret=client_secret
+    )
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+    # Get tracks from the playlist
+    results = sp.playlist_tracks(playlist_id)
+
+    # Extract relevant information from tracks
+    tracks_info = []
+    for item in results["items"]:
+        track = item["track"]
+        tracks_info.append(
+            {
+                "name": track["name"],
+                "id": track["id"],
+                "artists": [artist["name"] for artist in track["artists"]],
+                "album": track["album"]["name"],
+                "preview_url": track["preview_url"] if "preview_url" in track else None,
+            }
+        )
+
+    return tracks_info
 
 
 #########################################################################
@@ -211,7 +305,7 @@ def load_playlists(request, username: str, payload: PlaylistPayload):
                 'name': pl_data.name,
                 'id': pl_data.id,
                 'owner': user.username,
-                'spotify_owner': pl_data.owner, # assuming owner is a CharField with the username
+                'author': pl_data.owner, # assuming owner is a CharField with the username
                 'tracks': pl_data.tracks
             }
         )

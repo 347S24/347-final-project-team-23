@@ -82,7 +82,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline /> {/* Helps to apply consistent baseline styles */}
       <Router>
-        <NavigationBar />
+        {/* <NavigationBar /> */}
         <Routes>
           <Route path="/home" element={<Home theme={theme} />} />
           <Route path="/about" element={<About theme={theme} />} />

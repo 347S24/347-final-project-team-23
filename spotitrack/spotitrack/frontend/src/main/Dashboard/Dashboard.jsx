@@ -10,6 +10,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import './dashboard.css';
 import '../../index.css'
 import { useNavigate } from 'react-router-dom';
+import NavigationBar from '../../header/NavigationBar';
 
 
 
@@ -112,6 +113,7 @@ import { useNavigate } from 'react-router-dom';
     return (
       <ThemeProvider theme={theme}>
       <div id="dashboard">
+      <NavigationBar loggedIn={true} username={username} banner={false}/>
       <Box sx={{ flexGrow: 1,
                 bgcolor: 'white',
                 minWidth: 300 }}>

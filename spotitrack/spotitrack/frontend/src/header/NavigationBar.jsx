@@ -12,32 +12,72 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useNavigate } from 'react-router-dom';
-
-import {Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useState, useCallback } from 'react';
 
 import './styles.css';
+import authCheck from '../custom_hooks/AuthCheck';
+import PropTypes from 'prop-types';
 
 
 
-// For later, when we have a login/signup page
-// const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
-const pages = [
-  { anchor: 'Home', label: 'Home'},
-  { anchor: 'About', label: 'About'},
-  { anchor: 'Utility', label: 'What?'},
-  { anchor: 'Pitch', label: 'Why?'},
-];
 
-// For later, when we have a login/signup page
-// const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+let pages = [];
 
 // For now, just login/signup
-const settings = ['Login'];
+let settings = [];
 
-function NavigationBar() {
+NavigationBar.propTypes = {
+  loggedIn: PropTypes.bool.isRequired,
+  username: PropTypes.string,
+  banner: PropTypes.bool.isRequired,
+};
+
+
+
+function NavigationBar(props) {
+
+  const isLoggedIn = props.loggedIn;
+  const banner = props.banner;
+  let username = props.username;
+
+
+  // const logout = useCallback(async () => {
+  //   try {
+  //     const response = await fetch('/api/logout', { method: 'GET' });
+  //     const text = await response.text();
+  //     console.log('Response text:', text);
+  //     if (response.ok) {
+  //       const data = JSON.parse(text);
+  //       console.log('Logged out successfully', data);
+  //     } else {
+  //       throw new Error('Failed to log out');
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to log out', error);
+  //   }
+  // }, []);
+
+  if (!banner) {
+    if (isLoggedIn) {
+      settings = ['Logout'];
+      pages = [];
+    } else {
+      settings = ['Login'];
+      pages = [
+        { anchor: 'Home', label: 'Home'},
+        { anchor: 'About', label: 'About'},
+        { anchor: 'Utility', label: 'What?'},
+        { anchor: 'Pitch', label: 'Why?'},
+      ];
+    }
+  } else {
+    settings = [];
+    pages = [];
+  }
+
 
   // Smooth scrolling to page locations
   const scrollToElement = (id) => {
@@ -72,8 +112,17 @@ function NavigationBar() {
   const navigate = useNavigate();
 
   const handleLoginSignupClick = (route) => {
-    navigate(`/${route}`); // Navigate to the sign-in/sign-up page
-    handleCloseUserMenu(); // Assuming you have this function to close the menu
+    if (route === 'logout') {
+      // For now, just navigate to the home page
+      navigate('/');
+      // logout();
+
+      handleCloseUserMenu();
+      return;
+    } else{
+      navigate(`/${route}`); // Navigate to the sign-in/sign-up page
+      handleCloseUserMenu(); // Assuming you have this function to close the menu
+    }
   };
 
   // component
@@ -182,38 +231,40 @@ function NavigationBar() {
           </Box>
 
           {/* For later, responsive to be profile icon, a picture, or letter after logging in. */}
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="YOUR NAME" src={AccountCircleIcon}
 
-                />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={() =>
-                handleLoginSignupClick(setting.toLowerCase())}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          {!banner && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={username} src={AccountCircleIcon} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={() =>
+                  handleLoginSignupClick(setting.toLowerCase())}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          )}
+
         </Toolbar>
       </Container>
     </AppBar>
