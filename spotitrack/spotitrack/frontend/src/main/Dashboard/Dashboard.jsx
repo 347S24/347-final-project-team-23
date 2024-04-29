@@ -11,6 +11,7 @@ import './dashboard.css';
 import '../../index.css'
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from '../../header/NavigationBar';
+import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
 
 
 
@@ -110,6 +111,27 @@ import NavigationBar from '../../header/NavigationBar';
       navigate(`/playlist/${playlistId}`);
     };
 
+    const callOAuth = async () => {
+      try {
+          const response = await fetch('/users/api/authorization', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          });
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          let authorizationUrl = await response.text();
+          authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
+          console.log('Authorization URL:', authorizationUrl);
+
+          window.location = authorizationUrl;
+      } catch (error) {
+          console.error('Failed to fetch authorization URL:', error);
+      }
+    };
+
     return (
       <ThemeProvider theme={theme}>
       <div id="dashboard">
@@ -121,6 +143,21 @@ import NavigationBar from '../../header/NavigationBar';
       {/* Header with user information and oauth button */}
       <div id="header">
         <Typography variant="h3">Welcome, {user.first_name}!</Typography>
+        <Button
+        variant="contained"
+        color="primary"
+        sx={{
+          padding: '40px', // Adjust padding as needed
+          display: 'flex', // Ensures the icon centers in the button
+          justifyContent: 'center'
+        }}
+        onClick={callOAuth}
+      >
+        <img src={SpotifyLogo} alt="Spotify logo" style={{
+          width: '80px', // Adjust size as needed
+          height: '80px', // Adjust size as needed
+        }} />
+      </Button>
       </div>
 
       {/* Available user palylists */}

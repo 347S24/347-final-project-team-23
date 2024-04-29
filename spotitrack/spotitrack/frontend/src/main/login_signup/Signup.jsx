@@ -12,6 +12,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Alert } from "@mui/material"; // Import the 'Alert' component from the '@mui/material' package
 import { ThemeProvider } from "@mui/system";
 import PropTypes from 'prop-types';
+import { Navigate } from "react-router-dom";
 
 
 
@@ -22,6 +23,7 @@ Signup.propTypes = {
 function Signup(props) {
   // STATE MANAGEMENT FUCNTIONS
   const theme = props.theme;
+  const navigate = Navigate();
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -146,6 +148,7 @@ function Signup(props) {
         });
     }
     console.log("fetch done");
+    navigate("/authorize_spotify");
   };
 
   return (
@@ -321,10 +324,10 @@ function Signup(props) {
           </div>
         </Box>
         <Button
-          // onClick={handleFormSubmission}
+          onClick={handleFormSubmission}
           id="signup_button"
           variant="contained"
-          href="/authorize_spotify"
+          // href="/authorize_spotify"
           color="primary"
           type="submit"
           size="large"
