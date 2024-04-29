@@ -499,32 +499,37 @@ def get_user_playlists(request):
         # Loop over the json and get out the specific items we need for the playlist model
         playlist_info = []
         for playlist in playlist_data['items']:
-            owner = playlist['owner']['display_name']
+            author = playlist['owner']['display_name']
             playlist_id = playlist['id']
             playlist_name = playlist['name']
-            #tracks = playlist_data['tracks']['total']
+            tracks = playlist['tracks']['total']
+            image = playlist['images'][0]['url']
+
+            #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
         
             
             playlist_info.append({
-                'owner': owner,
+                'author': author,
                 'playlist_id': playlist_id,
                 'playlist_name': playlist_name,
-                #'tracks': tracks
+                'tracks': tracks,
+                'owner': user.username,
+                'image': image
             })
-
-            # playlist_instance = Playlist(
-            #     owner = owner,
-            #     id=playlist_id,
-            #     name = playlist_name
-            # )
-            # playlist_instance.save()
+            
         # loop over the list items from the last for loop and add them to the playlist model
-        # for items in playlist_info:
-        #     request.playlist.name = items['playlist_name']
-        #     request.playlist.id = items['playlist_id']
-        #     request.playlist.owner = items['owner']
-        #     request.playlist.save()
-        return playlist_data
+            owner, _ = User.objects.get_or_create(username=user.username)
+            playlist_instance = Playlist(
+                owner = owner,
+                id=playlist_id,
+                name = playlist_name,
+                tracks = tracks,
+                author = author,
+                image = image
+            )
+            playlist_instance.save()
+
+        return playlist_info
     else:
         return response.status_code, {"error": "Failed to fetch user playlists"}
 
