@@ -7,7 +7,7 @@ from ninja import NinjaAPI
 import requests
 import base64
 from .models import User, Playlist
-from ninja import Schema
+from ninja import Schema, Query
 from typing import List
 from django.http import JsonResponse
 from config.settings import base
@@ -199,63 +199,37 @@ def get_artist_info(request, artist_name):
         return None
 
 
-@api.get("/playlist/{username}")
-@require_authentication
-def get_user_playlists(request, username: str):
 
-    # Authenticate with Spotify API
-    client_credentials_manager = SpotifyClientCredentials(
-        client_id=client_id, client_secret=client_secret
-    )
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-    try:
-        playlists = sp.user_playlists(username, limit=50)
-        playlist_info = [
-            {
-                "name": playlist["name"],
-                "id": playlist["id"],
-                "owner": playlist["owner"]["display_name"],
-                "tracks": playlist["tracks"]["total"],
-            }
-            for playlist in playlists["items"]
-        ]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# @api.get("/tracks/{username}/{playlist_id}")
+# def get_playlist_tracks(request, username: str, playlist_id: str):
+#     # Replace these with your own client ID and client secret
+#     client_id = "e4991986fa1e43369b4a732ebc1aea45"
+#     client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
 
-    return playlist_info
+#     # Authenticate with Spotify API
+#     client_credentials_manager = SpotifyClientCredentials(
+#         client_id=client_id, client_secret=client_secret
+#     )
+#     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
+#     # Get tracks from the playlist
+#     results = sp.playlist_tracks(playlist_id)
 
+#     # Extract relevant information from tracks
+#     tracks_info = []
+#     for item in results["items"]:
+#         track = item["track"]
+#         tracks_info.append(
+#             {
+#                 "name": track["name"],
+#                 "id": track["id"],
+#                 "artists": [artist["name"] for artist in track["artists"]],
+#                 "album": track["album"]["name"],
+#                 "preview_url": track["preview_url"] if "preview_url" in track else None,
+#             }
+#         )
 
-@api.get("/tracks/{username}/{playlist_id}")
-def get_playlist_tracks(request, username: str, playlist_id: str):
-    # Replace these with your own client ID and client secret
-    client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-
-    # Authenticate with Spotify API
-    client_credentials_manager = SpotifyClientCredentials(
-        client_id=client_id, client_secret=client_secret
-    )
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-    # Get tracks from the playlist
-    results = sp.playlist_tracks(playlist_id)
-
-    # Extract relevant information from tracks
-    tracks_info = []
-    for item in results["items"]:
-        track = item["track"]
-        tracks_info.append(
-            {
-                "name": track["name"],
-                "id": track["id"],
-                "artists": [artist["name"] for artist in track["artists"]],
-                "album": track["album"]["name"],
-                "preview_url": track["preview_url"] if "preview_url" in track else None,
-            }
-        )
-
-    return tracks_info
+#     return tracks_info
 
 
 #########################################################################
@@ -521,7 +495,7 @@ def get_user_playlists(request):
             owner, _ = User.objects.get_or_create(username=user.username)
             playlist_instance = Playlist(
                 owner = owner,
-                id=playlist_id,
+                playlist_id=playlist_id,
                 name = playlist_name,
                 tracks = tracks,
                 author = author,
@@ -535,12 +509,17 @@ def get_user_playlists(request):
 
 
 
-@api.get("/tracks/{username}/{playlist_id}")
-def get_playlist_tracks(request, username: str, playlist_id: str):
+
+@api.get("/tracks/")
+def get_playlist_tracks(request, playlist_id: str):
+
+    # Retrieve the playlist from the database using the provided playlist_id
+    
+
+
     # Replace these with your own client ID and client secret
     client_id = "e4991986fa1e43369b4a732ebc1aea45"
     client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-
     # Authenticate with Spotify API
     client_credentials_manager = SpotifyClientCredentials(
         client_id=client_id, client_secret=client_secret

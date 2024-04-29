@@ -51,7 +51,7 @@ class User(AbstractUser):
 
 class Playlist(models.Model):
     name = CharField(max_length=200)
-    id = CharField(max_length=200, primary_key=True)
+    playlist_id = CharField(max_length=200, primary_key=True)
     owner = models.ForeignKey('User', on_delete=models.RESTRICT, null=True)
     author = CharField(max_length=200, blank=True, null=True)
     tracks = IntegerField(blank=True, null=True, default=0)
@@ -65,6 +65,9 @@ class Playlist(models.Model):
 
         """
         return reverse("playlist:detail", kwargs={"name": self.name})
+    
+    def get_playlist_id(self):
+        return self.playlist_id
 
 
 
