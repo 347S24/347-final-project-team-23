@@ -19,6 +19,11 @@ from django.contrib.auth import authenticate
 from spotitrack.users.models import Playlist
 from ninja import Router
 
+from .models import User
+from ninja import Schema
+from typing import List
+
+
 
 
 ### CLIENT AND SECRET KEYS ARE NOW STORED IN THE .env FILE ###
@@ -56,10 +61,6 @@ def require_authentication(f):
 #                           USER API
 #
 #########################################################################
-from .models import User
-from ninja import Schema
-from typing import List
-
 class UserIn(Schema):
     username: str
     first_name: str = ''
@@ -72,45 +73,16 @@ class LoginSchema(Schema):
     password: str
 
 
-# @api.post("/user")
-# def create_user(request, payload: UserIn):
-#     print(payload.username)
-#     print(payload.first_name)
-#     print(payload.last_name)
-#     print(payload.password)
-#     print(payload.email)
-#     user = User.objects.create(**payload.dict())
-#     return {"users name": user.name}
+@api.post("/user")
+def create_user(request, payload: UserIn):
+    print(payload.username)
+    print(payload.first_name)
+    print(payload.last_name)
+    print(payload.password)
+    print(payload.email)
+    user = User.objects.create(**payload.dict())
+    return {"users name": user.name}
 
-
-@api.get("/user/{username}-{password}", response=UserIn)
-def get_user(request, username: str, password: str):
-    user = get_object_or_404(User, username=username, password=password)
-    return user
-
-from ninja import Schema, ModelSchema
-from typing import List
-from .models import Playlist  # Import the Playlist model
-
-class PlaylistIn(Schema):
-    id: str
-    name: str
-    owner: str
-    tracks: int
-
-class PlaylistPayload(Schema):
-    playlists: List[PlaylistIn]
-
-
-# @api.post("/create_user")
-# def create_user(request, payload: UserIn):
-#     print(payload.username)
-#     print(payload.first_name)
-#     print(payload.last_name)
-#     print(payload.password)
-#     print(payload.email)
-#     user = User.objects.create(**payload.dict())
-#     return {"users name": user.name}
 
 @api.post("/create_user")
 def create_user(request, payload: UserIn):
@@ -143,25 +115,12 @@ def login_user(request, data: LoginSchema):
         return JsonResponse({"error": "Invalid credentials"}, status=401)
 
 
-# @api.get("/get_auth_token/{username}", response=UserIn)
-# @require_authentication
-# def get_auth_token(request, username: str):
-#     request.user.get_access_token(request.user)
-
-
-# @api.get("/get_refresh_token/{username}", response=UserIn)
-# @require_authentication
-# def get_user(request, username: str):
-#     return request.user.get_refresh_token(request.user)
-
-
 
 @api.get("/logout/")
 @require_authentication
 def logout_user(request):
     logout(request)
     return JsonResponse({"message": "Logged out"})
-
 
 
 
@@ -200,38 +159,58 @@ def get_artist_info(request, artist_name):
     else:
         return None
 
+@api.get("/playlist")
+def get_user_playlists(request):
+
+    user = request.user
+    access_token = user.access_token
+
+    headers = {
+            "Authorization": 'Bearer ' + access_token
+        }
+    response = requests.get('https://api.spotify.com/v1/me/playlists', headers=headers)
+    if response.status_code == 200:
+        playlist_data = response.json()
+        # Loop over the json and get out the specific items we need for the playlist model
+        playlist_info = []
+        for playlist in playlist_data['items']:
+            author = playlist['owner']['display_name']
+            playlist_id = playlist['id']
+            playlist_name = playlist['name']
+            tracks = playlist['tracks']['total']
+            image = playlist['images'][0]['url']
+            snapshot_id = playlist['snapshot_id']
+
+            #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
 
 
-# @api.get("/tracks/{username}/{playlist_id}")
-# def get_playlist_tracks(request, username: str, playlist_id: str):
-#     # Replace these with your own client ID and client secret
-#     client_id = "e4991986fa1e43369b4a732ebc1aea45"
-#     client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+            playlist_info.append({
+                'author': author,
+                'playlist_id': playlist_id,
+                'playlist_name': playlist_name,
+                'tracks': tracks,
+                'owner': user.username,
+                'image': image,
+                'snapshot_id': snapshot_id
+            })
 
-#     # Authenticate with Spotify API
-#     client_credentials_manager = SpotifyClientCredentials(
-#         client_id=client_id, client_secret=client_secret
-#     )
-#     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+            #SHOULD ONLY DO THIS IF THE USER'S SOMETHING IS UNIQUE
+        # loop over the list items from the last for loop and add them to the playlist model
+            owner, _ = User.objects.get_or_create(username=user.username)
+            playlist_instance = Playlist(
+                owner = owner,
+                playlist_id=playlist_id,
+                name = playlist_name,
+                tracks = tracks,
+                author = author,
+                image = image,
+                snapshot_id = snapshot_id
+            )
+            playlist_instance.save()
 
-#     # Get tracks from the playlist
-#     results = sp.playlist_tracks(playlist_id)
-
-#     # Extract relevant information from tracks
-#     tracks_info = []
-#     for item in results["items"]:
-#         track = item["track"]
-#         tracks_info.append(
-#             {
-#                 "name": track["name"],
-#                 "id": track["id"],
-#                 "artists": [artist["name"] for artist in track["artists"]],
-#                 "album": track["album"]["name"],
-#                 "preview_url": track["preview_url"] if "preview_url" in track else None,
-#             }
-#         )
-
-#     return tracks_info
+        return playlist_info
+    else:
+        return response.status_code, {"error": "Failed to fetch user playlists"}
 
 
 #########################################################################
@@ -241,51 +220,7 @@ def get_artist_info(request, artist_name):
 #
 #########################################################################
 
-from ninja import Schema, ModelSchema
-from typing import List
-from .models import Playlist  # Import the Playlist model
 
-class PlaylistIn(Schema):
-    id: str
-    name: str
-    owner: str
-    tracks: int
-
-class PlaylistPayload(Schema):
-    playlists: List[PlaylistIn]
-
-@api.post("/user/{username}/load_playlists")
-def load_playlists(request, username: str, payload: PlaylistPayload):
-    user = get_object_or_404(User, username=username)
-    for pl_data in payload.playlists:
-        Playlist.objects.update_or_create(
-            spotify_id=pl_data.id,
-            defaults={
-                'name': pl_data.name,
-                'owner': user,
-                'tracks': pl_data.tracks
-            }
-        )
-    return {"status": "Playlists loaded successfully"}
-
-
-### EXPERIMENTAL INTERNAL API FOR PLAYLIST MANAGEMENT ###
-
-@api.post("/user/{username}/load_playlists")
-def load_playlists(request, username: str, payload: PlaylistPayload):
-    user = get_object_or_404(User, username=username)
-    for pl_data in payload.playlists:
-        Playlist.objects.update_or_create(
-            id=pl_data.id,
-            defaults={
-                'name': pl_data.name,
-                'id': pl_data.id,
-                'owner': user.username,
-                'author': pl_data.owner, # assuming owner is a CharField with the username
-                'tracks': pl_data.tracks
-            }
-        )
-    return {"status": "Playlists loaded successfully"}
 
 
 
@@ -366,15 +301,6 @@ def handle_callback(request, code: str):
 
         print('THE USER', request.user)
         token_data = response.json()
-
-        # TEST EXAMPLE OF MAKING A CALL USING USER ACCESS TOKEN
-        #print('\n\n\n\n\ntoken_data')
-        #print(token_data)
-        #test_headers = {
-        #    "Authorization": 'Bearer ' + token_data['access_token']
-        #}
-        #test_response = requests.get('https://api.spotify.com/v1/me',headers=test_headers)
-        #print(test_response.json())
         request.user.set_access_token(token_data['access_token'])
         # User.set_access_token(request.user, token_data['access_token'])
         request.user.set_refresh_token(token_data['refresh_token'])
@@ -422,188 +348,3 @@ def refresh_token(request):
             'error': 'Failed to refresh access token'
         }
 
-
-@api.get("/about")
-def get_artist_info(request, artist_name):
-    # Replace these with your own client ID and client secret
-
-    client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-    # Authenticate with Spotify API
-    client_credentials_manager = SpotifyClientCredentials(
-        client_id=client_id, client_secret=client_secret
-    )
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-    # Search for the artist
-    results = sp.search(q="artist:" + artist_name, type="artist")
-    items = results["artists"]["items"]
-
-    if len(items) > 0:
-        artist = items[0]
-        return {
-            "name": artist["name"],
-            "popularity": artist["popularity"],
-            "followers": artist["followers"]["total"],
-            "genres": artist["genres"],
-        }
-    else:
-        return None
-
-
-@api.get("/playlist")
-def get_user_playlists(request):
-    # Replace these with your own client ID and client secret
-    # client_id = "e4991986fa1e43369b4a732ebc1aea45"``
-    # client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-
-    # # Authenticate with Spotify API
-    # client_credentials_manager = SpotifyClientCredentials(
-    #     client_id=client_id, client_secret=client_secret
-    # )
-    # sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-    user = request.user
-    access_token = user.access_token
-
-    headers = {
-            "Authorization": 'Bearer ' + access_token
-        }
-    response = requests.get('https://api.spotify.com/v1/me/playlists', headers=headers)
-    if response.status_code == 200:
-        playlist_data = response.json()
-        # Loop over the json and get out the specific items we need for the playlist model
-        playlist_info = []
-        for playlist in playlist_data['items']:
-            author = playlist['owner']['display_name']
-            playlist_id = playlist['id']
-            playlist_name = playlist['name']
-            tracks = playlist['tracks']['total']
-            image = playlist['images'][0]['url']
-            snapshot_id = playlist['snapshot_id']
-
-            #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
-
-
-            playlist_info.append({
-                'author': author,
-                'playlist_id': playlist_id,
-                'playlist_name': playlist_name,
-                'tracks': tracks,
-                'owner': user.username,
-                'image': image,
-                'snapshot_id': snapshot_id
-            })
-            
-            #SHOULD ONLY DO THIS IF THE USER'S SOMETHING IS UNIQUE
-        # loop over the list items from the last for loop and add them to the playlist model
-            owner, _ = User.objects.get_or_create(username=user.username)
-            playlist_instance = Playlist(
-                owner = owner,
-                playlist_id=playlist_id,
-                name = playlist_name,
-                tracks = tracks,
-                author = author,
-                image = image,
-                snapshot_id = snapshot_id
-            )
-            playlist_instance.save()
-        
-        return playlist_info
-    else:
-        return response.status_code, {"error": "Failed to fetch user playlists"}
-
-
-
-
-@api.get("/tracks/")
-def get_playlist_tracks(request, playlist_id: str):
-
-    # Retrieve the playlist from the database using the provided playlist_id
-
-
-
-    # Replace these with your own client ID and client secret
-    client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-    # Authenticate with Spotify API
-    client_credentials_manager = SpotifyClientCredentials(
-        client_id=client_id, client_secret=client_secret
-    )
-    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
-    # Get tracks from the playlist
-    results = sp.playlist_tracks(playlist_id)
-
-    # Extract relevant information from tracks
-    tracks_info = []
-    for item in results["items"]:
-        track = item["track"]
-        tracks_info.append(
-            {
-                "name": track["name"],
-                "id": track["id"],
-                "artists": [artist["name"] for artist in track["artists"]],
-                "album": track["album"]["name"],
-                "preview_url": track["preview_url"] if "preview_url" in track else None,
-            }
-        )
-
-    return tracks_info
-
-
-from .models import User
-from ninja import Schema
-from typing import List
-
-
-class UserIn(Schema):
-    username: str
-    first_name: str = ''
-    last_name: str = ''
-    password: str = ''
-    email: str = ''
-
-
-@api.post("/user")
-def create_user(request, payload: UserIn):
-    print(payload.username)
-    print(payload.first_name)
-    print(payload.last_name)
-    print(payload.password)
-    print(payload.email)
-    user = User.objects.create(**payload.dict())
-    return {"users name": user.name}
-
-
-@api.get("/user/{username}-{password}", response=UserIn)
-def get_user(request, username: str, password: str):
-    user = get_object_or_404(User, username=username, password=password)
-    return user
-
-from ninja import Schema, ModelSchema
-from typing import List
-from .models import Playlist  # Import the Playlist model
-
-class PlaylistIn(Schema):
-    id: str
-    name: str
-    owner: str
-    tracks: int
-
-class PlaylistPayload(Schema):
-    playlists: List[PlaylistIn]
-
-@api.post("/user/{username}/load_playlists")
-def load_playlists(request, username: str, payload: PlaylistPayload):
-    user = get_object_or_404(User, username=username)
-    for pl_data in payload.playlists:
-        Playlist.objects.update_or_create(
-            spotify_id=pl_data.id,
-            defaults={
-                'name': pl_data.name,
-                'owner': user,
-                'tracks': pl_data.tracks
-            }
-        )
-    return {"status": "Playlists loaded successfully"}
