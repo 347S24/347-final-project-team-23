@@ -9,7 +9,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Alert } from "@mui/material"; // Import the 'Alert' component from the '@mui/material' package
+import { Alert, AlertTitle } from "@mui/material"; // Import the 'Alert' component from the '@mui/material' package
 import { ThemeProvider } from "@mui/system";
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -68,6 +68,9 @@ function Signup(props) {
   const [passwordError, setPasswordError] = React.useState(false);
   const handleSetPasswordError = () => setPasswordError((error) => !error);
 
+  const [weakPassword, setWeakPassword] = React.useState(false);
+  const handleWeakPasswordError = () => setWeakPassword((error) => !error);
+
   const [verifyPassword, setVerifyPassword] = React.useState("");
   const handleVerifyPassword = (event) => {
     setVerifyPassword(event.target.value);
@@ -88,6 +91,8 @@ function Signup(props) {
   // ERROR HANDLING STATE MANAGEMENT
 
   const [error, setError] = React.useState(false);
+  const passwordRegex =
+      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
   const handleSetError = () =>
     setError(() => {
       if (username === "") {
@@ -102,6 +107,9 @@ function Signup(props) {
       if (password === "") {
         handleSetPasswordError();
       }
+      if (!password.match(passwordRegex)) {
+        handleWeakPasswordError();
+      }
       if (verifyPassword === "") {
         handleSetVerifyPasswordError();
       }
@@ -113,9 +121,15 @@ function Signup(props) {
   // FORM SUBMISSION HANDLER
 
   const handleFormSubmission = (event) => {
-    const passwordRegex =
-      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
-    event.preventDefault();
+    
+    if (!error) {
+      event.preventDefault();
+    } else {
+      // Problem when pressing sign-up twice.
+      // Not super important, but I'll figure it out.
+      if (weakPassword) setWeakPassword(false);
+    }
+
     if (
       username === "" ||
       firstName == "" ||
@@ -147,8 +161,7 @@ function Signup(props) {
         .then((data) => {
           console.log("User info: ", data);
         });
-
-        navigate("/login")
+      navigate("/login")
     }
     console.log("fetch done");
   };
@@ -157,9 +170,19 @@ function Signup(props) {
     <div id="Login">
     <ThemeProvider theme={theme}>
       {/* Error handling -- make more robust if time */}
+      {(weakPassword) && <Alert severity="error" style={{textAlign: "left"}}>Weak Password!
+          <ul style={{alignItems: "left"}}>
+            <li>Your password can't be too similar to your other personal information.</li>
+            <li>Your Password must contain at least 8 characters.</li>
+            <li>Your password can't be a commonly used password.</li>
+            <li>Your password can't be entirely numeric.</li>
+          </ul>
+        </Alert>}
+      
       {(error || usernameError || firstNameError || lastNameError
         || passwordError || verifyPasswordError || emailError)
-        && <Alert severity="error">Fill all required fields</Alert>}
+        && <Alert severity="error">Fill all required fields</Alert>
+      }
 
       {/* Heading for the page */}
       <Typography
@@ -329,7 +352,7 @@ function Signup(props) {
           onClick={handleFormSubmission}
           id="signup_button"
           variant="contained"
-          href="/login"
+          // href="/authorize_spotify"
           color="primary"
           type="submit"
           size="large"
