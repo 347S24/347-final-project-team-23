@@ -164,6 +164,13 @@ def get_user_playlists(request):
 
     user = request.user
     access_token = user.access_token
+    print("\n")
+    print("USER: ", user.username)
+    print("\n")
+
+    print("\n")
+    print("USER ACCESS TOKEN: ", access_token)
+    print("\n")
 
     headers = {
             "Authorization": 'Bearer ' + access_token
