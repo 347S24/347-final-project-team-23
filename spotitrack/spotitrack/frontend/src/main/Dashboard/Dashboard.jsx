@@ -32,6 +32,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
     console.log("user: ", user);
 
     const username = user.username;
+    console.log(user.accessToken);
 
 
     if (!user) {
@@ -56,45 +57,6 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
     }, []);
 
 
-
-
-    //  FETCH ALL PLAYLISTS -- NEED ACCESS TOKEN
-    // async function fetchAllPlaylists(accessToken) {
-    //   let url = 'https://api.spotify.com/v1/me/playlists?limit=50';
-    //   let playlists = [];
-
-    //   while (url) {
-    //     const response = await fetch(url, {
-    //       headers: { 'Authorization': `Bearer ${accessToken}` }
-    //     });
-    //     const data = await response.json();
-    //     playlists = playlists.concat(data.items);
-    //     url = data.next;  // Update the URL to the next page of playlists, or null if there are no more pages
-    //   }
-
-    //   return playlists;
-    // }
-
-
-    // EXAMPLE FETCH DETAILED PLAYLIST -- NEED TO IMPLENENT
-    // useEffect(() => {
-    //   const username = 'Sacr3d';
-    //   const playlist_id = '7AqyxOJ8sodMKovIVWqvDV';
-    //   const fetchUrl = `/users/api/tracks/${username}/${playlist_id}?username=${username}&playlist_id=${playlist_id}`;
-
-    //   const fetchData = async () => {
-    //       const res = await fetch(fetchUrl);
-    //       const data = await res.json();
-    //       console.log(data); // Log full data to see the structure
-    //       if (data.tracks && data.tracks.length > 0) {
-    //           console.log(data.tracks[0].album.artUrl);
-    //       }
-    //   };
-
-    //   fetchData();
-    // }, []);
-
-
     const handlePlaylistClick = (playlistId) => {
       navigate(`/playlist/${playlistId}`);
     };
@@ -115,11 +77,8 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
           authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
           console.log('Authorization URL:', authorizationUrl);
           window.location = authorizationUrl;
-          // window.location = 'http://127.0.0.1:8000/';
           console.log(window.location);
-          window.location = navigate(location, { state: { user: user } });
-          console.log("navigated");
-          console.log(window.location);
+
       } catch (error) {
           console.error('Failed to fetch authorization URL:', error);
       }

@@ -147,9 +147,10 @@ function Signup(props) {
         .then((data) => {
           console.log("User info: ", data);
         });
+
+        navigate("/login")
     }
     console.log("fetch done");
-    navigate("/login")
   };
 
   return (
@@ -325,10 +326,10 @@ function Signup(props) {
           </div>
         </Box>
         <Button
-          // onClick={handleFormSubmission}
+          onClick={handleFormSubmission}
           id="signup_button"
           variant="contained"
-          href="/authorize_spotify"
+          href="/login"
           color="primary"
           type="submit"
           size="large"
