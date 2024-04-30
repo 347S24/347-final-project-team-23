@@ -165,6 +165,8 @@ def get_user_playlists(request):
 
     user = request.user
     access_token = user.access_token
+
+
     print("\n")
     print("USER: ", user.username)
     print("\n")
@@ -188,7 +190,7 @@ def get_user_playlists(request):
             playlist_id = playlist['id']
             playlist_name = playlist['name']
             tracks = playlist['tracks']['total']
-            image = playlist['images'][0]['url']
+            #image = playlist['images'][0]['url']
             snapshot_id = playlist['snapshot_id']
 
             #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
@@ -200,7 +202,7 @@ def get_user_playlists(request):
                 'playlist_name': playlist_name,
                 'tracks': tracks,
                 'owner': user.username,
-                'image': image,
+                #'image': image,
                 'snapshot_id': snapshot_id
             })
 
@@ -213,13 +215,14 @@ def get_user_playlists(request):
                 name = playlist_name,
                 tracks = tracks,
                 author = author,
-                image = image,
+                #image = image,
                 snapshot_id = snapshot_id
             )
             playlist_instance.save()
 
         return playlist_info
     else:
+        print(response.text)
         # request.user.access_token = None
         # request.user.save()
         # request_user_authorization(request)

@@ -137,7 +137,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div"
                         color={'primary'}>
-                          {playlist.name}
+                          {playlist.playlist_name}
                         </Typography>
                         <Box sx={{ display: 'flex',
                                     flexDirection: 'column',
@@ -148,7 +148,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
                           {playlist.tracks} tracks
                         </Typography>
                         <Typography variant="body2" color="secondary">
-                          by {playlist.owner}
+                          by {playlist.author}
                         </Typography>
                         </Stack>
                         </Box>
