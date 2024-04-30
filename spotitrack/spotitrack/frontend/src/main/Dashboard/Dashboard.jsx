@@ -53,21 +53,10 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
         return data;
       }
       fetchData();
-      handlePlaylistsLoad(playlists);
     }, []);
 
 
-    const handlePlaylistsLoad = async (playlists) => {
-      await fetch(`/users/api/user/${username}/load_playlists`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ playlists })
-      });
-      // Handle response or errors
-      console.log("Playlists loaded successfully!");
-    };
+
 
     //  FETCH ALL PLAYLISTS -- NEED ACCESS TOKEN
     // async function fetchAllPlaylists(accessToken) {
@@ -111,6 +100,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
     };
 
     const callOAuth = async () => {
+
       try {
           const response = await fetch('/users/api/authorization', {
               method: 'GET',
@@ -124,8 +114,12 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
           let authorizationUrl = await response.text();
           authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
           console.log('Authorization URL:', authorizationUrl);
-
           window.location = authorizationUrl;
+          // window.location = 'http://127.0.0.1:8000/';
+          console.log(window.location);
+          window.location = navigate(location, { state: { user: user } });
+          console.log("navigated");
+          console.log(window.location);
       } catch (error) {
           console.error('Failed to fetch authorization URL:', error);
       }

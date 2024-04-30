@@ -176,6 +176,8 @@ def get_user_playlists(request):
             "Authorization": 'Bearer ' + access_token
         }
     response = requests.get('https://api.spotify.com/v1/me/playlists', headers=headers)
+    print("\n\n\nresponse.status_code")
+    print(response.status_code)
     if response.status_code == 200:
         playlist_data = response.json()
         # Loop over the json and get out the specific items we need for the playlist model
