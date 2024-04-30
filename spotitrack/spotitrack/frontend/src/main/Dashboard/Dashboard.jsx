@@ -46,8 +46,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
 
     useEffect(() => {
       async function fetchData() {
-        const username = 'salmankhattak2017';
-        const res = await fetch(`/users/api/playlist/${username}?username=${username}`);
+        const res = await fetch(`/users/api/playlist`);
         const data = await res.json();
         setPlaylists(data);
         console.log("data received from spotify: ", data);
