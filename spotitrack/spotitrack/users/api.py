@@ -217,6 +217,8 @@ def get_user_playlists(request):
 
         return playlist_info
     else:
+        request.user.access_token = None
+        request.user.save()
         return response.status_code, {"error": "Failed to fetch user playlists"}
 
 
