@@ -452,7 +452,7 @@ def get_artist_info(request, artist_name):
 @api.get("/playlist")
 def get_user_playlists(request):
     # Replace these with your own client ID and client secret
-    # client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    # client_id = "e4991986fa1e43369b4a732ebc1aea45"``
     # client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
 
     # # Authenticate with Spotify API
@@ -478,6 +478,7 @@ def get_user_playlists(request):
             playlist_name = playlist['name']
             tracks = playlist['tracks']['total']
             image = playlist['images'][0]['url']
+            snapshot_id = playlist['snapshot_id']
 
             #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
         
@@ -488,9 +489,11 @@ def get_user_playlists(request):
                 'playlist_name': playlist_name,
                 'tracks': tracks,
                 'owner': user.username,
-                'image': image
+                'image': image,
+                'snapshot_id': snapshot_id
             })
             
+            #SHOULD ONLY DO THIS IF THE USER'S SOMETHING IS UNIQUE
         # loop over the list items from the last for loop and add them to the playlist model
             owner, _ = User.objects.get_or_create(username=user.username)
             playlist_instance = Playlist(
@@ -499,10 +502,11 @@ def get_user_playlists(request):
                 name = playlist_name,
                 tracks = tracks,
                 author = author,
-                image = image
+                image = image,
+                snapshot_id = snapshot_id
             )
             playlist_instance.save()
-
+        
         return playlist_info
     else:
         return response.status_code, {"error": "Failed to fetch user playlists"}
