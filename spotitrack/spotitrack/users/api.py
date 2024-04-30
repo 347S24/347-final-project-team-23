@@ -18,6 +18,7 @@ from django.contrib.auth import login
 from django.contrib.auth import authenticate
 from spotitrack.users.models import Playlist
 from ninja import Router
+from django.shortcuts import redirect
 
 from .models import User
 from ninja import Schema
@@ -219,10 +220,47 @@ def get_user_playlists(request):
 
         return playlist_info
     else:
-        request.user.access_token = None
-        request.user.save()
-        request_user_authorization(request)
+        # request.user.access_token = None
+        # request.user.save()
+        # request_user_authorization(request)
         return response.status_code, {"error": "Failed to fetch user playlists"}
+
+
+
+@api.get("/tracks/")
+def get_playlist_tracks(request, playlist_id: str):
+
+    # Retrieve the playlist from the database using the provided playlist_id
+
+
+
+    # Replace these with your own client ID and client secret
+    client_id = "e4991986fa1e43369b4a732ebc1aea45"
+    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
+    # Authenticate with Spotify API
+    client_credentials_manager = SpotifyClientCredentials(
+        client_id=client_id, client_secret=client_secret
+    )
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+    # Get tracks from the playlist
+    results = sp.playlist_tracks(playlist_id)
+
+    # Extract relevant information from tracks
+    tracks_info = []
+    for item in results["items"]:
+        track = item["track"]
+        tracks_info.append(
+            {
+                "name": track["name"],
+                "id": track["id"],
+                "artists": [artist["name"] for artist in track["artists"]],
+                "album": track["album"]["name"],
+                "preview_url": track["preview_url"] if "preview_url" in track else None,
+            }
+        )
+
+    return tracks_info
 
 
 #########################################################################
@@ -246,6 +284,7 @@ def get_user_playlists(request):
 
 # THIS REQUESTS AN AUTHORAZATION TOKEN TO TURN INTO AN ACCESS TOKEN
 @api.get("/authorization")
+@require_authentication
 def request_user_authorization(request):
     """
     Requests authorization from thze user to access Spotify resources.
@@ -318,6 +357,7 @@ def handle_callback(request, code: str):
         request.user.set_refresh_token(token_data['refresh_token'])
         # User.set_refresh_token(request.user, token_data['refresh_token'])
         request.user.save()
+        return redirect("http://127.0.0.1:8000/login")
         return token_data
     else:
         return {
