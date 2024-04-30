@@ -11,7 +11,7 @@ function Pitch(props) {
   return (
     <div id="Pitch">
     <ThemeProvider theme={theme}>
-      <h1>your Music Diary</h1>
+      <h1>Your Music Diary</h1>
       <p>
       Spotitrack isn&apos;t just about music; it&apos;s about moments. It&apos;s
       about that summer hit that played at every party or that comforting melody
