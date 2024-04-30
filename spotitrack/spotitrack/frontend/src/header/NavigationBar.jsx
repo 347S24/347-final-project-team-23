@@ -13,11 +13,10 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate, Link } from 'react-router-dom';
-import { useState, useCallback } from 'react';
+
+import PropTypes from 'prop-types';
 
 import './styles.css';
-import authCheck from '../custom_hooks/AuthCheck';
-import PropTypes from 'prop-types';
 
 
 

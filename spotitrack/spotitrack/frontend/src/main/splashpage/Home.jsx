@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@mui/system";
 import PropTypes from 'prop-types';
 import "./styles.css";
-import NavigationBar from "../header/NavigationBar";
+import NavigationBar from "../../header/NavigationBar";
 import { Box } from "@mui/material";
 
 Home.propTypes = {

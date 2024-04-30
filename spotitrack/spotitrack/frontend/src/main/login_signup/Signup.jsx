@@ -1,19 +1,32 @@
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import FormControl from "@mui/material/FormControl";
-import React from "react";
-import InputAdornment from "@mui/material/InputAdornment";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import IconButton from "@mui/material/IconButton";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Alert, AlertTitle } from "@mui/material"; // Import the 'Alert' component from the '@mui/material' package
-import { ThemeProvider } from "@mui/system";
-import PropTypes from 'prop-types';
+// React Router DOM
 import { useNavigate } from 'react-router-dom';
 
+// PropTypes
+import PropTypes from 'prop-types';
+
+// Material-UI Components
+import {
+  Box,
+  Button,
+  Typography,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  IconButton,
+  Link,
+  Alert,
+  ThemeProvider
+} from '@mui/material';
+
+// Material-UI Icons
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+
+import React from "react";
+
+import './../../index.css'
 
 
 Signup.propTypes = {
@@ -21,51 +34,67 @@ Signup.propTypes = {
 };
 
 function Signup(props) {
-  // STATE MANAGEMENT FUCNTIONS
+  // Theme and user variables
   const theme = props.theme;
   let user = null;
-
   const navigate = useNavigate();
 
+  // Password visibility and click states
   const [showPassword, setShowPassword] = React.useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
 
-  // STATE MANAGEMENT FOR FORM INPUTS
 
+  // Form field state managmeent
   const [username, setUsername] = React.useState("");
   const handleSetUsername = (event) => {
     setUsername(event.target.value);
     console.log("username: " + username);
   };
-  const [usernameError, setUsernameError] = React.useState(false);
-  const handleSetUsernameError = () => setUsernameError((error) => !error);
 
   const [firstName, setFirstName] = React.useState("");
   const handleSetFirstName = (event) => {
     setFirstName(event.target.value);
     console.log("first name: " + firstName);
   };
-  const [firstNameError, setFirstNameError] = React.useState(false);
-  const handleSetFirstNameError = () => setFirstNameError((error) => !error);
 
   const [lastName, setLastName] = React.useState("");
   const handleSetLastName = (event) => {
     setLastName(event.target.value);
     console.log("last name: " + lastName);
   };
-  const [lastNameError, setLastNameError] = React.useState(false);
-  const handleSetLastNameError = () => setLastNameError((error) => !error);
 
   const [password, setPassword] = React.useState("");
   const handleSetPassword = (event) => {
     setPassword(event.target.value);
     console.log("password " + password);
   };
+
+  const handleVerifyPassword = (event) => {
+    setVerifyPassword(event.target.value);
+    console.log("verify password: " + verifyPassword);
+  };
+  const [email, setEmail] = React.useState("");
+  const handleSetEmail = (event) => {
+    setEmail(event.target.value);
+    console.log("email: " + email);
+  };
+
+
+
+  // Form field error state management
+  const [usernameError, setUsernameError] = React.useState(false);
+  const handleSetUsernameError = () => setUsernameError((error) => !error);
+
+  const [firstNameError, setFirstNameError] = React.useState(false);
+  const handleSetFirstNameError = () => setFirstNameError((error) => !error);
+
+  const [lastNameError, setLastNameError] = React.useState(false);
+  const handleSetLastNameError = () => setLastNameError((error) => !error);
+
   const [passwordError, setPasswordError] = React.useState(false);
   const handleSetPasswordError = () => setPasswordError((error) => !error);
 
@@ -73,27 +102,22 @@ function Signup(props) {
   const handleWeakPasswordError = () => setWeakPassword((error) => !error);
 
   const [verifyPassword, setVerifyPassword] = React.useState("");
-  const handleVerifyPassword = (event) => {
-    setVerifyPassword(event.target.value);
-    console.log("verify password: " + verifyPassword);
-  };
+
   const [verifyPasswordError, setVerifyPasswordError] = React.useState(false);
   const handleSetVerifyPasswordError = () =>
     setVerifyPasswordError((error) => !error);
 
-  const [email, setEmail] = React.useState("");
-  const handleSetEmail = (event) => {
-    setEmail(event.target.value);
-    console.log("email: " + email);
-  };
   const [emailError, setEmailError] = React.useState(false);
   const handleSetEmailError = () => setEmailError((error) => !error);
 
-  // ERROR HANDLING STATE MANAGEMENT
 
+
+
+  // ERROR HANDLING STATE MANAGEMENT
   const [error, setError] = React.useState(false);
-  const passwordRegex =
-      /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+  const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,}$/;
+
+  // Error handling
   const handleSetError = () =>
     setError(() => {
       if (username === "") {
@@ -143,8 +167,7 @@ function Signup(props) {
       handleSetError();
     } else {
 
-      // API CALLS TO SERVER
-
+      // Create a user object
       fetch("/users/api/create_user", {
         method: "POST",
         headers: {
@@ -180,21 +203,31 @@ function Signup(props) {
           navigate("/authorize_spotify", {state: {user: user}});
 
         })
-        // navigate("/authorize_spotify", {state: {user: user}});
     }
     console.log("fetch done");
   };
 
+
   return (
-    <div id="Login">
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'top',
+      spacing: 20,
+      padding: '40px',
+      width: '100%',
+      height: '100%',
+
+    }}>
     <ThemeProvider theme={theme}>
       {/* Error handling -- make more robust if time */}
       {(weakPassword) && <Alert severity="error" style={{textAlign: "left"}}>Weak Password!
           <ul style={{alignItems: "left"}}>
-            <li>Your password can't be too similar to your other personal information.</li>
+            <li>Your password can&apos;t be too similar to your other personal information.</li>
             <li>Your Password must contain at least 8 characters.</li>
-            <li>Your password can't be a commonly used password.</li>
-            <li>Your password can't be entirely numeric.</li>
+            <li>Your password can&apos;t be a commonly used password.</li>
+            <li>Your password can&apos;t be entirely numeric.</li>
           </ul>
         </Alert>}
 
@@ -203,12 +236,19 @@ function Signup(props) {
         && <Alert severity="error">Fill all required fields</Alert>
       }
 
-      {/* Heading for the page */}
+      {/* Heading for the   page */}
       <Typography
         variant="h3"
         color="primary"
         component="h3"
-        id="login-header"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'top',
+          spacing: 20,
+          paddingTop: '150px',
+        }}
       >
         Sign up
       </Typography>
@@ -217,11 +257,17 @@ function Signup(props) {
       <form onSubmit={handleFormSubmission}>
         <Box
           component="form"
-          sx={{
-            "& .MuiTextField-root": { m: 1, width: "25ch" },
-          }}
           noValidate
           autoComplete="off"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'top',
+            spacing: 20,
+            padding: '40px',
+          }}
         >
           <div className="form">
             <FormControl
@@ -379,14 +425,16 @@ function Signup(props) {
           Sign Up
         </Button>
       </form>
-      <p id="signup-prompt">
+      <Typography variant="p"
+      sx={{
+        spacing: 20,
+        padding: '40px',
+      }}>
         Already have an account?{" "}
-        <a href="/login" id="inline-link">
-          Login
-        </a>
-      </p>
+        <Link href='/login'  underline="hover"> {'Login'}</Link>
+      </Typography>
       </ThemeProvider>
-    </div>
+    </Box>
   );
 }
 export default Signup;

@@ -7,13 +7,12 @@ import './index.css';
 
 // Components
 import Footer from './footer/Footer.jsx';
-import Home from './main/Home';
-import About from './main/About';
-import Utility from './main/Utility';
-import Pitch from './main/Pitch';
-import Main from './main/Main';
+import Home from './main/splashpage/Home.jsx';
+import About from './main/splashpage/About.jsx';
+import Utility from './main/splashpage/Utility.jsx';
+import Pitch from './main/splashpage/Pitch.jsx';
+import Main from './main/splashpage/Main.jsx';
 import Login from './main/login_signup/Login.jsx';
-import NavigationBar from './header/NavigationBar.jsx';
 import Signup from './main/login_signup/Signup.jsx';
 import SpotifyAuthorization from './main/login_signup/SpotifyAuthorization.jsx';
 import CompleteSignup from './main/login_signup/CompleteSignup.jsx';
@@ -75,6 +74,13 @@ function App() {
         },
       },
       // You can add additional components here if needed
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            color: 'primary',
+          }
+        }
+      },
     },
   }), [mode]);
 

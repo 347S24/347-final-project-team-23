@@ -1,17 +1,36 @@
-import { useLocation } from 'react-router-dom';
+// React core imports
 import { useEffect, useState } from 'react';
-import { ThemeProvider, Box } from '@mui/system';
-import { Grid, Typography, Button, Card, CardContent, CardMedia,
-  CardActionArea, CardActions, IconButton, Stack } from '@mui/material';
+
+// React Router DOM
+import { useNavigate, useLocation } from 'react-router-dom';
+
+// PropTypes
 import PropTypes from 'prop-types';
+
+// Material-UI System
+import { ThemeProvider, Box } from '@mui/system';
+
+// Material-UI Components
+import {
+  Grid,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActionArea,
+  CardActions,
+  IconButton,
+  Stack
+} from '@mui/material';
+
+// Material-UI Icons
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-
-import './dashboard.css';
-import '../../index.css'
-import { useNavigate } from 'react-router-dom';
+// Custom Components and Assets
 import NavigationBar from '../../header/NavigationBar';
-import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
+import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
+
 
 
 
@@ -86,14 +105,26 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
 
     return (
       <ThemeProvider theme={theme}>
-      <div id="dashboard">
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'top',
+        spacing: 20,
+      }}>
       <NavigationBar loggedIn={true} username={username} banner={false}/>
       <Box sx={{ flexGrow: 1,
                 bgcolor: 'white',
-                minWidth: 300 }}>
+                minWidth: 300,
+                padding: '40px' }}>
 
       {/* Header with user information and oauth button */}
-      <div id="header">
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
         <Typography variant="h3">Welcome, {user.first_name}!</Typography>
         <Button
         variant="contained"
@@ -110,23 +141,31 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
           height: '80px', // Adjust size as needed
         }} />
       </Button>
-      </div>
+      </Box>
 
       {/* Available user palylists */}
-      <div className="available_playlists">
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'left',
+        justifyContent: 'top',
+        spacing: 20,
+        padding: '10px',
+      }}>
         <Typography variant="h4">Your Playlists</Typography>
-        {/* <PlaylistGrid /> */}
-      </div>
+      </Box>
 
 
       <Box sx={{ flexGrow: 1,
                   p: 2,
-                  bgcolor: 'secondary.accent',
-                  border: 2 }}>
+                  bgcolor: 'secondary',
+                  }}>
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                 {playlists.map((playlist, index) => (
                   <Grid item xs={2} sm={4} md={4} key={index}>
-                  <Card>
+                  <Card sx={{
+                    maxWidth: 350,
+                  }}>
                   <CardActionArea onClick={() => handlePlaylistClick(playlist.id)}>
                       <CardMedia
                         component="img"
@@ -134,28 +173,47 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
                         image={playlist.imageUrl || "https://via.placeholder.com/140"} // Replace with your default image if no URL is available
                         alt={playlist.name}
                       />
-                      <CardContent>
+
+                      <CardContent sx={{
+                        bgcolor: 'black'
+                      }}>
+
+                        <Stack direction="row" spacing={2}
+                        sx={{
+                          justifyContent: 'flex-start',
+                          alignItems: 'flex-start',
+                        }}>
                         <Typography gutterBottom variant="h6" component="div"
                         color={'primary'}>
-                          {playlist.playlist_name}
-                        </Typography>
-                        <Box sx={{ display: 'flex',
-                                    flexDirection: 'column',
-                                    justifyContent: 'flex-end'
-                                 }}>
-                        <Stack>
-                        <Typography variant="body2" color="secondary.light">
-                          {playlist.tracks} tracks
-                        </Typography>
-                        <Typography variant="body2" color="secondary">
-                          by {playlist.author}
+                        {(playlist.playlist_name.length > 22) ?
+                          playlist.playlist_name.substring(0, 21) + '...' : playlist.playlist_name
+                        }
                         </Typography>
                         </Stack>
+                        <Box>
+                        <Stack sx= {{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'flex-end',
+                          alignItems: 'flex-end',
+                          spacing: 1
+
+                        }}>
+                        <Typography variant="subtitle1" color="secondary.light">
+                          by {playlist.author}
+                        </Typography>
+                        <Typography variant="subtitle2" color="secondary">
+                          {playlist.tracks} tracks
+                        </Typography>
+                        </Stack>
+
                         </Box>
+
                       </CardContent>
+
                       </CardActionArea>
                       <CardActions sx={{
-                                        bgcolor: 'black'
+                                        bgcolor: 'gray'
                                         }}>
                         <Button size="small" color="primary">
                           track
@@ -175,7 +233,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
         <p>your username is {user.username}</p>
         <p>your password is {user.password}</p>
         </Box>
-      </div>
+      </Box>
       </ThemeProvider>
     );
   }

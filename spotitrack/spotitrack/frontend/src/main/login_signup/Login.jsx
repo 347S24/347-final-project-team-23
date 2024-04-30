@@ -1,21 +1,35 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import FormControl from '@mui/material/FormControl';
+// React imports
 import React from 'react';
-import InputAdornment from '@mui/material/InputAdornment';
-import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import IconButton from '@mui/material/IconButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Alert from '@mui/material/Alert'
+
+// React Router DOM
 import { useNavigate } from 'react-router-dom';
-import { ThemeProvider } from "@mui/system";
+
+// PropTypes
 import PropTypes from 'prop-types';
 
-import './../../index.css'
-import './style.css'
+// Material-UI Components
+import {
+  Box,
+  Button,
+  Typography,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  IconButton,
+  Link,
+  Alert,
+  ThemeProvider,
+  Stack
+} from '@mui/material';
+
+// Material-UI Icons
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
+// Stylesheet
+import './../../index.css';
+
 
 Login.propTypes = {
   theme: PropTypes.object.isRequired,
@@ -27,12 +41,18 @@ function Login(props) {
   const navigate = useNavigate();
 
 
+  // Error, show password, click states
   const [error, setError] = React.useState(false);
   const handleSetError = () => setError((error) => !error);
 
   const [showPassword, setShowPassword] = React.useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  // Username and password state
   const [username, setUsername] = React.useState('');
   const handleSetUsername = (event) => {
     setUsername(event.target.value);
@@ -45,12 +65,7 @@ function Login(props) {
     console.log(password);
   }
 
-  // const [user, setUser] = React.useState(null);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
+  // Form submission handler
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
@@ -86,26 +101,64 @@ function Login(props) {
 
 
   return (
-    <div id='Login'>
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'top',
+      spacing: 20,
+      padding: '40px',
+      width: '100%',
+      height: '100%',
+
+    }}>
     <ThemeProvider theme={theme}>
       {error && <Alert severity="error">Username or password incorrect</Alert>}
+
       <Typography
         variant="h3"
         color="primary"
         component="h3"
-        id="login-header">
+        sx= {{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'top',
+          spacing: 20,
+          paddingTop: '150px',
+
+        }}>
         Login
       </Typography>
+
       <form onSubmit={handleFormSubmit}>
+
         <Box
           component="form"
-          sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch' },
-          }}
           noValidate
           autoComplete="off"
+          sx={{
+            '& .MuiTextField-root': { m: 1, width: '25ch' },
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'top',
+            spacing: 20,
+            padding: '40px',
+          }}
         >
           <div className='form'>
+
+          <Stack sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'top',
+            spacing: 20,
+            padding: '10px',
+
+          }}>
+          {/* Username form control */}
           <FormControl onChange={handleSetUsername}
             sx={{ m:1, width: '52ch' }}
             variant="outlined"
@@ -123,6 +176,7 @@ function Login(props) {
             />
           </FormControl>
 
+          {/* Password form control */}
           <FormControl onChange={handleSetPassword}
             sx={{ m: 1, width: '52ch' }}
             variant="outlined"
@@ -151,9 +205,12 @@ function Login(props) {
               label="Password"
             />
           </FormControl>
+          </Stack>
+
           </div>
         </Box>
 
+        {/* Submit form */}
         <Button
           id="login_button"
           variant="contained"
@@ -164,11 +221,15 @@ function Login(props) {
           Login
         </Button>
       </form>
-      <p id="signup-prompt">
-          Don&apos;t have an account? <a href='/signup' id="inline-link">Sign up</a>
-        </p>
+      <Typography variant="p"
+      sx={{
+        spacing: 20,
+        padding: '40px',
+      }}>
+        Don&apos;t have an account? <Link href='/signup'  underline="hover"> {'Sign up'}</Link>
+      </Typography>
         </ThemeProvider>
-    </div>
+    </Box>
   )
 }
 
