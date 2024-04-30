@@ -133,6 +133,8 @@ def login_user(request, data: LoginSchema):
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "email": user.email,
+                "access_token": user.access_token,
+                "refresh_token": user.refresh_token,
                 # Include any other user details here
             }
         }
@@ -481,8 +483,8 @@ def get_user_playlists(request):
             snapshot_id = playlist['snapshot_id']
 
             #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
-        
-            
+
+
             playlist_info.append({
                 'author': author,
                 'playlist_id': playlist_id,
@@ -518,7 +520,7 @@ def get_user_playlists(request):
 def get_playlist_tracks(request, playlist_id: str):
 
     # Retrieve the playlist from the database using the provided playlist_id
-    
+
 
 
     # Replace these with your own client ID and client secret
