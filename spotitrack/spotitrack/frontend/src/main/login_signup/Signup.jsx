@@ -23,6 +23,7 @@ Signup.propTypes = {
 function Signup(props) {
   // STATE MANAGEMENT FUCNTIONS
   const theme = props.theme;
+  let user = null;
 
   const navigate = useNavigate();
 
@@ -121,7 +122,7 @@ function Signup(props) {
   // FORM SUBMISSION HANDLER
 
   const handleFormSubmission = (event) => {
-    
+
     if (!error) {
       event.preventDefault();
     } else {
@@ -160,8 +161,26 @@ function Signup(props) {
         .then((response) => response.json())
         .then((data) => {
           console.log("User info: ", data);
-        });
-      navigate("/login")
+        })
+        .then(() => {
+          fetch('users/api/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({username, password})
+          })
+          .then(response => {
+            user = response.json();
+            console.log("User info: ", user);
+          });
+        })
+        .then(() => {
+          console.log("attempting to navigate");
+          navigate("/authorize_spotify", {state: {user: user}});
+
+        })
+        // navigate("/authorize_spotify", {state: {user: user}});
     }
     console.log("fetch done");
   };
@@ -178,7 +197,7 @@ function Signup(props) {
             <li>Your password can't be entirely numeric.</li>
           </ul>
         </Alert>}
-      
+
       {(error || usernameError || firstNameError || lastNameError
         || passwordError || verifyPasswordError || emailError)
         && <Alert severity="error">Fill all required fields</Alert>

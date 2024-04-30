@@ -11,11 +11,15 @@ import NavigationBar from '../../header/NavigationBar';
 
 SpotifyAuthorization.propTypes = {
   theme: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired,
 };
 
 function SpotifyAuthorization(props) {
 
+  const user = props.user;
+
   const callOAuth = async () => {
+
     try {
         const response = await fetch('/users/api/authorization', {
             method: 'GET',
@@ -29,8 +33,9 @@ function SpotifyAuthorization(props) {
         let authorizationUrl = await response.text();
         authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
         console.log('Authorization URL:', authorizationUrl);
-
         window.location = authorizationUrl;
+        console.log(window.location);
+
     } catch (error) {
         console.error('Failed to fetch authorization URL:', error);
     }

@@ -51,36 +51,6 @@ function Login(props) {
     event.preventDefault();
   };
 
-  // const handleFormSubmit = (event) => {
-  //   event.preventDefault();
-
-  //   if (username === '' || password === '') {
-  //     handleSetError();
-  //     return;
-  //   } else {
-  //     fetch(`/users/api/login/${username}-${password}`, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     })
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         handleSetError();
-  //         throw new Error('Network response was not ok');
-  //       }
-  //       return response.json()
-  //     })
-  //     .then(data => {
-  //         console.log('User info: ', data);
-  //           navigate('/dashboard', { state: { user: data } });
-  //     })
-  //     .catch(error => {
-  //         console.error('Error fetching user:', error);
-  //     });
-  //   }
-  // }
-
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
@@ -89,7 +59,7 @@ function Login(props) {
         return;
     }
     console.log('Logging in with:', username, password);
-    fetch('/users/api/login/', {
+    fetch('/users/api/login', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

@@ -135,7 +135,7 @@ import SpotifyLogo from './../login_signup/assets/spotify-logo.svg';
                         alt={playlist.name}
                       />
                       <CardContent>
-                        <Typography gutterBottom variant="h5" component="div"
+                        <Typography gutterBottom variant="h6" component="div"
                         color={'primary'}>
                           {playlist.playlist_name}
                         </Typography>

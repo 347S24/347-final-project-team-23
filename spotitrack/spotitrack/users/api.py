@@ -74,15 +74,15 @@ class LoginSchema(Schema):
     password: str
 
 
-@api.post("/user")
-def create_user(request, payload: UserIn):
-    print(payload.username)
-    print(payload.first_name)
-    print(payload.last_name)
-    print(payload.password)
-    print(payload.email)
-    user = User.objects.create(**payload.dict())
-    return {"users name": user.name}
+# @api.post("/user")
+# def create_user(request, payload: UserIn):
+#     print(payload.username)
+#     print(payload.first_name)
+#     print(payload.last_name)
+#     print(payload.password)
+#     print(payload.email)
+#     user = User.objects.create(**payload.dict())
+#     return {"users name": user.name}
 
 
 @api.post("/create_user")
@@ -93,7 +93,7 @@ def create_user(request, payload: UserIn):
     return {"users name": user.username}
 
 
-@api.post("/login/")
+@api.post("/login")
 def login_user(request, data: LoginSchema):
     print(f"Attempting to log in with username: {data.username} and password: {data.password}")
     user = authenticate(request, username=data.username, password=data.password)
@@ -360,7 +360,7 @@ def handle_callback(request, code: str):
         request.user.set_refresh_token(token_data['refresh_token'])
         # User.set_refresh_token(request.user, token_data['refresh_token'])
         request.user.save()
-        return redirect("http://127.0.0.1:8000/login")
+        return redirect("http://127.0.0.1:8000/complete_signup")
         return token_data
     else:
         return {
