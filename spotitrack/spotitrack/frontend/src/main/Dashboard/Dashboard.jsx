@@ -53,13 +53,6 @@ import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
     const username = user.username;
     console.log(user.accessToken);
 
-
-    if (!user) {
-      // Handle the scenario when no user data is passed
-      console.log("No user data available.");
-      return <div>No user data available. Please login again.</div>;
-    }
-
     // API calls
 
     const [playlists, setPlaylists] = useState([]);
@@ -77,8 +70,17 @@ import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
 
 
     const handlePlaylistClick = (playlistId) => {
-      navigate(`/playlist/${playlistId}`);
+      console.log("Playlist clicked: ", playlistId);
+      navigate(`/playlist`, { state: { user: user, playlistId: playlistId } });
     };
+
+
+
+    if (!user) {
+      // Handle the scenario when no user data is passed
+      console.log("No user data available.");
+      return <div>No user data available. Please login again.</div>;
+    }
 
     const callOAuth = async () => {
 
@@ -166,11 +168,11 @@ import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
                   <Card sx={{
                     maxWidth: 350,
                   }}>
-                  <CardActionArea onClick={() => handlePlaylistClick(playlist.id)}>
+                  <CardActionArea onClick={() => handlePlaylistClick(playlist.playlist_id)}>
                       <CardMedia
                         component="img"
-                        height="140"
-                        image={playlist.imageUrl || "https://via.placeholder.com/140"} // Replace with your default image if no URL is available
+                        height="300"
+                        image={playlist.image || "https://via.placeholder.com/140"} // Replace with your default image if no URL is available
                         alt={playlist.name}
                       />
 

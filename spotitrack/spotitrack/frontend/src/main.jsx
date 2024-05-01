@@ -17,6 +17,7 @@ import Signup from './main/login_signup/Signup.jsx';
 import SpotifyAuthorization from './main/login_signup/SpotifyAuthorization.jsx';
 import CompleteSignup from './main/login_signup/CompleteSignup.jsx';
 import Dashboard from './main/Dashboard/Dashboard.jsx';
+import PlaylistDetail from './main/Dashboard/PlaylistDetail.jsx'; // Import the missing component
 
 function App() {
   const [mode, setMode] = useState('light'); // Toggle between 'light' and 'dark'
@@ -100,6 +101,7 @@ function App() {
           <Route path="/" element={<Main theme={theme} />} />
           <Route path="/dashboard" element={<Dashboard theme={theme} />} />
           <Route path="/complete_signup" element={<CompleteSignup theme={theme} />} />
+          <Route path="/playlist" element={<PlaylistDetail theme={theme} />} />
         </Routes>
         <Footer />
       </Router>

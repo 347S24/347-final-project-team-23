@@ -74,17 +74,6 @@ class LoginSchema(Schema):
     password: str
 
 
-# @api.post("/user")
-# def create_user(request, payload: UserIn):
-#     print(payload.username)
-#     print(payload.first_name)
-#     print(payload.last_name)
-#     print(payload.password)
-#     print(payload.email)
-#     user = User.objects.create(**payload.dict())
-#     return {"users name": user.name}
-
-
 @api.post("/create_user")
 def create_user(request, payload: UserIn):
     user = User(username=payload.username, email=payload.email, first_name=payload.first_name, last_name=payload.last_name)
@@ -166,26 +155,17 @@ def get_user_playlists(request):
     user = request.user
     access_token = user.access_token
 
-
-    print("\n")
-    print("USER: ", user.username)
-    print("\n")
-
-    print("\n")
-    print("USER ACCESS TOKEN: ", access_token)
-    print("\n")
-
     headers = {
             "Authorization": 'Bearer ' + access_token
         }
     response = requests.get('https://api.spotify.com/v1/me/playlists', headers=headers)
-    print("\n\n\nresponse.status_code")
-    print(response.status_code)
+
     if response.status_code == 200:
         playlist_data = response.json()
         # Loop over the json and get out the specific items we need for the playlist model
         playlist_info = []
         for playlist in playlist_data['items']:
+            image_url = playlist['images'][0]['url'] if playlist['images'] else 'https://via.placeholder.com/150'
             author = playlist['owner']['display_name']
             playlist_id = playlist['id']
             playlist_name = playlist['name']
@@ -202,7 +182,7 @@ def get_user_playlists(request):
                 'playlist_name': playlist_name,
                 'tracks': tracks,
                 'owner': user.username,
-                #'image': image,
+                'image': image_url,
                 'snapshot_id': snapshot_id
             })
 
@@ -222,25 +202,15 @@ def get_user_playlists(request):
 
         return playlist_info
     else:
-        print(response.text)
-        # request.user.access_token = None
-        # request.user.save()
-        # request_user_authorization(request)
+
         return response.status_code, {"error": "Failed to fetch user playlists"}
 
 
 
 @api.get("/tracks/")
 def get_playlist_tracks(request, playlist_id: str):
-
     # Retrieve the playlist from the database using the provided playlist_id
 
-
-
-    # Replace these with your own client ID and client secret
-    client_id = "e4991986fa1e43369b4a732ebc1aea45"
-    client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
-    # Authenticate with Spotify API
     client_credentials_manager = SpotifyClientCredentials(
         client_id=client_id, client_secret=client_secret
     )
@@ -248,18 +218,22 @@ def get_playlist_tracks(request, playlist_id: str):
 
     # Get tracks from the playlist
     results = sp.playlist_tracks(playlist_id)
-
     # Extract relevant information from tracks
     tracks_info = []
     for item in results["items"]:
         track = item["track"]
+        minutes = track["duration_ms"] // 60000  # Integer division to get full minutes
+        seconds = (track["duration_ms"] % 60000) // 1000  # Modulus to get remainder in milliseconds, then convert to seconds
+        duration_formatted = f"{minutes}:{seconds:02}"   # Converts ms to minutes and rounds to 2 decimal places
         tracks_info.append(
             {
                 "name": track["name"],
                 "id": track["id"],
                 "artists": [artist["name"] for artist in track["artists"]],
                 "album": track["album"]["name"],
+                "album_art_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
                 "preview_url": track["preview_url"] if "preview_url" in track else None,
+                "duration": duration_formatted,
             }
         )
 
