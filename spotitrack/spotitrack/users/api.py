@@ -368,10 +368,8 @@ def refresh_token(request):
         token_data = response.json()
         access_token = token_data['access_token']
         refreshed_refresh_token = token_data.get('refresh_token', refresh_token)
-        return {
-            'access_token': access_token,
-            'refresh_token': refreshed_refresh_token
-        }
+        request.user.access_token = access_token
+        request.user.refresh_token = refreshed_refresh_token
     else:
         return {
             'error': 'Failed to refresh access token'
