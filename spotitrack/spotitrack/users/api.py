@@ -165,7 +165,7 @@ def get_user_playlists(request):
                 'author': author,
                 'playlist_id': playlist_id,
                 'playlist_name': playlist_name,
-                'tracks': tracks,
+                'number_of_tracks': tracks,
                 'owner': user.username,
                 'image': image_url,
                 'snapshot_id': snapshot_id
@@ -178,7 +178,7 @@ def get_user_playlists(request):
                 owner = owner,
                 playlist_id=playlist_id,
                 name = playlist_name,
-                tracks = tracks,
+                number_of_tracks = tracks,
                 author = author,
                 image = image_url,
                 snapshot_id = snapshot_id
