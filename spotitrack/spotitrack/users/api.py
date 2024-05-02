@@ -5,7 +5,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import requests
 from ninja import NinjaAPI, Router, Schema
 import base64
-from .models import User, Playlist
+from .models import User, Playlist, PlaylistInstance
 from typing import List
 from django.http import JsonResponse
 from config.settings import base
@@ -174,7 +174,7 @@ def get_user_playlists(request):
             #SHOULD ONLY DO THIS IF THE USER'S SOMETHING IS UNIQUE
             # loop over the list items from the last for loop and add them to the playlist model
             owner, _ = User.objects.get_or_create(username=user.username)
-            playlist_instance = Playlist(
+            playlist = Playlist(
                 owner = owner,
                 playlist_id=playlist_id,
                 name = playlist_name,
@@ -182,6 +182,13 @@ def get_user_playlists(request):
                 author = author,
                 image = image_url,
                 snapshot_id = snapshot_id
+            )
+            playlist.save()
+
+            playlist_instance = PlaylistInstance(
+                playlist = playlist,
+                snapshot_id = snapshot_id
+                
             )
             playlist_instance.save()
 
