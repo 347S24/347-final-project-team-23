@@ -1,27 +1,18 @@
 from http.client import HTTPException
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import requests
-from ninja import NinjaAPI
-import requests
+from ninja import NinjaAPI, Router, Schema
 import base64
 from .models import User, Playlist
-from ninja import Schema, Query
 from typing import List
 from django.http import JsonResponse
 from config.settings import base
 from functools import wraps
 from django.http import JsonResponse
-from django.contrib.auth import logout
-from django.contrib.auth import login
-from django.contrib.auth import authenticate
-from spotitrack.users.models import Playlist
-from ninja import Router
-from django.shortcuts import redirect
+from django.contrib.auth import logout, login, authenticate
 
-from .models import User
-from ninja import Schema
 from typing import List
 
 
@@ -30,8 +21,6 @@ from typing import List
 ### CLIENT AND SECRET KEYS ARE NOW STORED IN THE .env FILE ###
 client_id = base.SPOTIFY_CLIENT_ID
 client_secret = base.SPOTIFY_CLIENT_SECRET
-# client_id = "e4991986fa1e43369b4a732ebc1aea45"
-# client_secret = "a6bb2acb683b4e7b9894edd80fc4ac60"
 
 
 ### API ###
@@ -170,11 +159,7 @@ def get_user_playlists(request):
             playlist_id = playlist['id']
             playlist_name = playlist['name']
             tracks = playlist['tracks']['total']
-            #image = playlist['images'][0]['url']
             snapshot_id = playlist['snapshot_id']
-
-            #image_url = playlist_data.get('images', [{'url': None}])[0]['url']
-
 
             playlist_info.append({
                 'author': author,
@@ -187,7 +172,7 @@ def get_user_playlists(request):
             })
 
             #SHOULD ONLY DO THIS IF THE USER'S SOMETHING IS UNIQUE
-        # loop over the list items from the last for loop and add them to the playlist model
+            # loop over the list items from the last for loop and add them to the playlist model
             owner, _ = User.objects.get_or_create(username=user.username)
             playlist_instance = Playlist(
                 owner = owner,
@@ -195,7 +180,7 @@ def get_user_playlists(request):
                 name = playlist_name,
                 tracks = tracks,
                 author = author,
-                #image = image,
+                image = image_url,
                 snapshot_id = snapshot_id
             )
             playlist_instance.save()
@@ -243,18 +228,6 @@ def get_playlist_tracks(request, playlist_id: str):
 #########################################################################
 #
 #
-#                        INTERNAL PLAYLIST API
-#
-#########################################################################
-
-
-
-
-
-
-#########################################################################
-#
-#
 #                           OAUTH API
 #
 #########################################################################
@@ -275,7 +248,6 @@ def request_user_authorization(request):
     Returns:
     - str: The authorization URL to redirect the user to.
     """
-    # client_id = "e4991986fa1e43369b4a732ebc1aea45"
     redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
     scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative"
 
@@ -330,9 +302,7 @@ def handle_callback(request, code: str):
         print('THE USER', request.user)
         token_data = response.json()
         request.user.set_access_token(token_data['access_token'])
-        # User.set_access_token(request.user, token_data['access_token'])
         request.user.set_refresh_token(token_data['refresh_token'])
-        # User.set_refresh_token(request.user, token_data['refresh_token'])
         request.user.save()
         return redirect("http://127.0.0.1:8000/complete_signup")
         return token_data
