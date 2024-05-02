@@ -184,11 +184,12 @@ def get_user_playlists(request):
                 image = image_url,
             )
             playlist.save()
-
+            playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
+            print('PLAYLIST', playlist)
             playlist_instance = PlaylistInstance(
                 playlist = playlist,
                 snapshot_id = snapshot_id,
-                # WORK IN PROGRESS
+                # RATE LIMITING WILL KILL THIS
                 # tracks = get_playlist_tracks(request.user, playlist_id)
 
             )
