@@ -172,27 +172,41 @@ def get_user_playlists(request):
                 'snapshot_id': snapshot_id
             })
 
-            #SHOULD ONLY DO THIS IF THE USER'S SOMETHING IS UNIQUE
-            # loop over the list items from the last for loop and add them to the playlist model
-            owner, _ = User.objects.get_or_create(username=user.username)
-            playlist = Playlist(
-                owner = owner,
-                playlist_id=playlist_id,
-                name = playlist_name,
-                number_of_tracks = tracks,
-                author = author,
-                image = image_url,
-            )
-            playlist.save()
+            # UPDATING IF THERE IS A PLAYLISY
+            try:
+                db_playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
+                if db_playlist.current_snapshot_id != snapshot_id:
+                    playlist_instance = PlaylistInstance(
+                        playlist = db_playlist,
+                        snapshot_id = snapshot_id,
+                        # WORK IN PROGRESS
+                        tracks = get_playlist_tracks(request.user, playlist_id)
 
-            playlist_instance = PlaylistInstance(
-                playlist = playlist,
-                snapshot_id = snapshot_id,
-                # WORK IN PROGRESS
-                # tracks = get_playlist_tracks(request.user, playlist_id)
+                )
+                playlist_instance.save()
+                db_playlist.current_snapshot_id = snapshot_id
+                db_playlist.save()
+            # IF NO PLAYLIST CREATE A PLAYLIST AND ITS INSTANCE
+            except:
+                owner, _ = User.objects.get_or_create(username=user.username)
+                playlist = Playlist(
+                    owner = owner,
+                    playlist_id=playlist_id,
+                    name = playlist_name,
+                    number_of_tracks = tracks,
+                    author = author,
+                    image = image_url,
+                    current_snapshot_id = snapshot_id
+                )
+                playlist.save()
 
-            )
-            playlist_instance.save()
+                playlist_instance = PlaylistInstance(
+                        playlist = playlist,
+                        snapshot_id = snapshot_id,
+                        # WORK IN PROGRESS
+                        tracks = get_playlist_tracks(request.user, playlist_id)
+                )
+                playlist_instance.save()
 
         return playlist_info
     else:
@@ -233,6 +247,25 @@ def get_playlist_tracks(request, playlist_id: str):
         )
 
     return tracks_info
+
+from ninja import ModelSchema
+from typing import List
+
+#Schema for printing out playlist instances for the playlistInstance API endpoint
+class PlaylistInstanceSchema(ModelSchema):
+    class Meta:
+        model = PlaylistInstance
+        fields = "__all__"
+
+@api.get("/playlistInstances/", response=List[PlaylistInstanceSchema])
+def get_playlist_tracks(request, playlist_id: str):
+    db_playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
+    playlist_instances = []
+    for pi in PlaylistInstance.objects.all():
+        if pi.playlist_id == db_playlist.playlist_id:
+            playlist_instances.append(pi)
+        print(playlist_instances)
+    return playlist_instances
 
 
 #########################################################################
