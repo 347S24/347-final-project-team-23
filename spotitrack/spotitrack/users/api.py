@@ -1,4 +1,5 @@
 from http.client import HTTPException
+import json
 from django.shortcuts import get_object_or_404, redirect
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
@@ -208,10 +209,11 @@ def get_playlist_tracks(request, playlist_id: str):
         client_id=client_id, client_secret=client_secret
     )
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-
     # Get tracks from the playlist
     results = sp.playlist_tracks(playlist_id)
     # Extract relevant information from tracks
+
+
     tracks_info = []
     for item in results["items"]:
         track = item["track"]
