@@ -64,6 +64,17 @@ import AuthButton from '../AuthButton/AuthButton.jsx';
     useEffect(() => {
       async function fetchData() {
         try {
+          const refresh = await fetch('/users/api/refresh/', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          if (!refresh.ok) {
+            throw new Error('Failed to refresh token');
+          } else {
+            console.log('Token refreshed');
+          }
           const res = await fetch(`/users/api/playlist`);
           if (!res.ok) throw new Error('Failed to fetch playlists');
           const data = await res.json();

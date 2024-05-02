@@ -44,7 +44,7 @@ class User(AbstractUser):
 
     def get_access_token(self):
         return self.access_token
-    
+
     def get_refresh_token(self):
         return self.refresh_token
 
@@ -56,8 +56,7 @@ class Playlist(models.Model):
     author = CharField(max_length=200, blank=True, null=True)
     number_of_tracks = IntegerField(blank=True, null=True, default=0)
     image = CharField(max_length=200, blank=True, null=True)
-    # Remove this 
-    #snapshot_id = CharField(max_length=200, blank=True, null=True)
+    current_snapshot_id = CharField(max_length=200, blank=True, null=True)
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -67,7 +66,7 @@ class Playlist(models.Model):
 
         """
         return reverse("playlist:detail", kwargs={"name": self.name})
-    
+
     def get_playlist_id(self):
         return self.playlist_id
 

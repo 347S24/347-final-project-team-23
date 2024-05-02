@@ -181,14 +181,14 @@ def get_user_playlists(request):
                 number_of_tracks = tracks,
                 author = author,
                 image = image_url,
-                snapshot_id = snapshot_id
             )
             playlist.save()
 
             playlist_instance = PlaylistInstance(
                 playlist = playlist,
-                snapshot_id = snapshot_id
-                
+                snapshot_id = snapshot_id,
+                tracks = get_playlist_tracks(request.user, playlist_id)
+
             )
             playlist_instance.save()
 
