@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import User, Playlist
+from .models import User, Playlist, PlaylistInstance
 # from django.contrib import admin
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
@@ -40,3 +40,4 @@ class UserAdmin(auth_admin.UserAdmin):
     search_fields = ["name"]
 
 admin.site.register(Playlist)
+admin.site.register(PlaylistInstance)
