@@ -29,7 +29,8 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 // Custom Components and Assets
 import NavigationBar from '../../header/NavigationBar';
-import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
+import Loading from './../Loading/Loading.jsx';
+import AuthButton from '../AuthButton/AuthButton.jsx';
 
 
 
@@ -53,17 +54,25 @@ import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
     const username = user.username;
     console.log(user.accessToken);
 
+    const [loading, setLoading] = useState(true); // Initial loading state
+    const [error, setError] = useState(null);
+
     // API calls
 
     const [playlists, setPlaylists] = useState([]);
 
     useEffect(() => {
       async function fetchData() {
-        const res = await fetch(`/users/api/playlist`);
-        const data = await res.json();
-        setPlaylists(data);
-        console.log("data received from spotify: ", data);
-        return data;
+        try {
+          const res = await fetch(`/users/api/playlist`);
+          if (!res.ok) throw new Error('Failed to fetch playlists');
+          const data = await res.json();
+          setPlaylists(data);
+          setLoading(false);
+        } catch (error) {
+          setError(error.message);
+          setLoading(false);
+        }
       }
       fetchData();
     }, []);
@@ -82,28 +91,35 @@ import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
       return <div>No user data available. Please login again.</div>;
     }
 
-    const callOAuth = async () => {
+    if (loading) {
+      return (
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          width: '100vw'
+        }}>
+          <Loading />
+        </Box>
+      );
+    }
 
-      try {
-          const response = await fetch('/users/api/authorization', {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          });
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          let authorizationUrl = await response.text();
-          authorizationUrl = authorizationUrl.replace(/^"|"$/g, '');
-          console.log('Authorization URL:', authorizationUrl);
-          window.location = authorizationUrl;
-          console.log(window.location);
-
-      } catch (error) {
-          console.error('Failed to fetch authorization URL:', error);
-      }
-    };
+    if (error) {
+      return <Box sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100vw'
+      }}>
+      <Typography
+        variant="h4" color="error">Error: {error} Please reauthorize SpotiTrack
+      </Typography>
+      <AuthButton />
+      </Box>;
+    }
 
     return (
       <ThemeProvider theme={theme}>
@@ -128,21 +144,7 @@ import SpotifyLogo from '../login_signup/assets/spotify-logo.svg';
         alignItems: 'center',
       }}>
         <Typography variant="h3">Welcome, {user.first_name}!</Typography>
-        <Button
-        variant="contained"
-        color="primary"
-        sx={{
-          padding: '40px', // Adjust padding as needed
-          display: 'flex', // Ensures the icon centers in the button
-          justifyContent: 'center'
-        }}
-        onClick={callOAuth}
-      >
-        <img src={SpotifyLogo} alt="Spotify logo" style={{
-          width: '80px', // Adjust size as needed
-          height: '80px', // Adjust size as needed
-        }} />
-      </Button>
+        <AuthButton />
       </Box>
 
       {/* Available user palylists */}

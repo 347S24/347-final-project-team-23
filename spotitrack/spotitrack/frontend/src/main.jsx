@@ -26,10 +26,10 @@ function App() {
     palette: {
       mode,
       primary: {
-        main: mode === 'light' ? '#67c65c' : '#4caf50', // Light mode green, Dark mode slightly different shade
+        main: mode === 'light' ? '#5dda82' : '#4caf50', // Light mode green, Dark mode slightly different shade
       },
       secondary: {
-        main: mode === 'light' ? '#9C27B0' : '#7b1fa2', // Light mode purple, Dark mode slightly different shade
+        main: mode === 'light' ? '#7E5AD8' : '#7b1fa2', // Light mode purple, Dark mode slightly different shade
       },
     },
     typography: {

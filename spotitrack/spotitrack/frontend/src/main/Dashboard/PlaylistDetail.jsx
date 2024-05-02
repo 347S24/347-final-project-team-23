@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { Card, CardContent, Typography, Grid, Badge, CardMedia, Box, IconButton, Stack } from '@mui/material';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { toUnitless } from '@mui/material/styles/cssUtils';
+import './../Loading/Loading.jsx';
+import Loading from './../Loading/Loading.jsx';
 
 function PlaylistDetail() {
   const location = useLocation();
@@ -70,7 +72,15 @@ function PlaylistDetail() {
     playingUrl ? audio.play() : audio.pause();
   }, [playingUrl, audio]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return<Box sx={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    width: '100vw'
+  }}>
+    <Loading />
+  </Box> ;
   if (error) return <div>Error: {error}</div>;
 
   const togglePlay = (url) => {

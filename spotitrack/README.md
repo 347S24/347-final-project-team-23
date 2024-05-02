@@ -9,6 +9,7 @@ Open terminal to `spotitrack/frontend`. After running `npm install` you can run 
 
 - Material UI: https://mui.com/
   - installed, not used as of yet.
+- ldrs: https://uiball.com/ldrs/
 
 ## Backend development
 
