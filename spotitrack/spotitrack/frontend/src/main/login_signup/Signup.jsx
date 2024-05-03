@@ -1,8 +1,8 @@
 // React Router DOM
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 // PropTypes
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 // Material-UI Components
 import {
@@ -16,18 +16,14 @@ import {
   IconButton,
   Link,
   Alert,
-  ThemeProvider
-} from '@mui/material';
+  ThemeProvider,
+} from "@mui/material";
 
 // Material-UI Icons
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import React from "react";
-
-import './../../index.css'
-
 
 Signup.propTypes = {
   theme: PropTypes.object.isRequired,
@@ -46,7 +42,6 @@ function Signup(props) {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
 
   // Form field state managmeent
   const [username, setUsername] = React.useState("");
@@ -83,8 +78,6 @@ function Signup(props) {
     console.log("email: " + email);
   };
 
-
-
   // Form field error state management
   const [usernameError, setUsernameError] = React.useState(false);
   const handleSetUsernameError = () => setUsernameError((error) => !error);
@@ -109,9 +102,6 @@ function Signup(props) {
 
   const [emailError, setEmailError] = React.useState(false);
   const handleSetEmailError = () => setEmailError((error) => !error);
-
-
-
 
   // ERROR HANDLING STATE MANAGEMENT
   const [error, setError] = React.useState(false);
@@ -146,7 +136,6 @@ function Signup(props) {
   // FORM SUBMISSION HANDLER
 
   const handleFormSubmission = (event) => {
-
     if (!error) {
       event.preventDefault();
     } else {
@@ -166,7 +155,6 @@ function Signup(props) {
     ) {
       handleSetError();
     } else {
-
       // Create a user object
       fetch("/users/api/create_user", {
         method: "POST",
@@ -186,253 +174,269 @@ function Signup(props) {
           console.log("User info: ", data);
         })
         .then(() => {
-          fetch('users/api/login', {
-            method: 'POST',
+          fetch("users/api/login", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify({username, password})
-          })
-          .then(response => {
+            body: JSON.stringify({ username, password }),
+          }).then((response) => {
             user = response.json();
             console.log("User info: ", user);
           });
         })
         .then(() => {
           console.log("attempting to navigate");
-          navigate("/authorize_spotify", {state: {user: user}});
-
-        })
+          navigate("/authorize_spotify", { state: { user: user } });
+        });
     }
     console.log("fetch done");
   };
 
-
   return (
-    <Box sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'top',
-      spacing: 20,
-      padding: '40px',
-      width: '100%',
-      height: '100%',
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "top",
+        spacing: 20,
+        padding: "40px",
+        width: "100%",
+        height: "100%",
+      }}
+    >
+      <ThemeProvider theme={theme}>
+        {/* Error handling -- make more robust if time */}
+        {weakPassword && (
+          <Alert severity="error" style={{ textAlign: "left" }}>
+            Weak Password!
+            <ul style={{ alignItems: "left" }}>
+              <li>
+                Your password can&apos;t be too similar to your other personal
+                information.
+              </li>
+              <li>Your Password must contain at least 8 characters.</li>
+              <li>Your password can&apos;t be a commonly used password.</li>
+              <li>Your password can&apos;t be entirely numeric.</li>
+            </ul>
+          </Alert>
+        )}
 
-    }}>
-    <ThemeProvider theme={theme}>
-      {/* Error handling -- make more robust if time */}
-      {(weakPassword) && <Alert severity="error" style={{textAlign: "left"}}>Weak Password!
-          <ul style={{alignItems: "left"}}>
-            <li>Your password can&apos;t be too similar to your other personal information.</li>
-            <li>Your Password must contain at least 8 characters.</li>
-            <li>Your password can&apos;t be a commonly used password.</li>
-            <li>Your password can&apos;t be entirely numeric.</li>
-          </ul>
-        </Alert>}
+        {(error ||
+          usernameError ||
+          firstNameError ||
+          lastNameError ||
+          passwordError ||
+          verifyPasswordError ||
+          emailError) && (
+          <Alert severity="error">Fill all required fields</Alert>
+        )}
 
-      {(error || usernameError || firstNameError || lastNameError
-        || passwordError || verifyPasswordError || emailError)
-        && <Alert severity="error">Fill all required fields</Alert>
-      }
-
-      {/* Heading for the   page */}
-      <Typography
-        variant="h3"
-        color="primary"
-        component="h3"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'top',
-          spacing: 20,
-          paddingTop: '150px',
-        }}
-      >
-        Sign up
-      </Typography>
-
-      {/* form begin */}
-      <form onSubmit={handleFormSubmission}>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
+        {/* Heading for the   page */}
+        <Typography
+          variant="h3"
+          color="primary"
+          component="h3"
           sx={{
-            '& .MuiTextField-root': { m: 1, width: '25ch' },
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'top',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "top",
             spacing: 20,
-            padding: '40px',
+            paddingTop: "150px",
           }}
         >
-          <div className="form">
-            <FormControl
-              onChange={handleSetUsername} // This is the username field
-              sx={{ m: 1, width: "52ch" }}
-              variant="outlined"
-              FullWidth
-              color="primary"
-              required
-              error={usernameError}
-            >
-              <InputLabel htmlFor="outlined-adornment-username">
-                Username
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-username"
-                type="username"
-                label="username"
-              />
-            </FormControl>
+          Sign up
+        </Typography>
 
-            {/* First name and last name fields */}
-            <div className="name">
+        {/* form begin */}
+        <form onSubmit={handleFormSubmission}>
+          <Box
+            component="form"
+            noValidate
+            autoComplete="off"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "25ch" },
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "top",
+              spacing: 20,
+              padding: "40px",
+            }}
+          >
+            <div className="form">
               <FormControl
-                onChange={handleSetFirstName} // This is the first name field
-                sx={{ m: 1, width: "25ch" }}
+                onChange={handleSetUsername} // This is the username field
+                sx={{ m: 1, width: "52ch" }}
                 variant="outlined"
+                FullWidth
                 color="primary"
                 required
-                error={firstNameError}
+                error={usernameError}
               >
-                <InputLabel htmlFor="outlined-adornment-first-name">
-                  First Name
+                <InputLabel htmlFor="outlined-adornment-username">
+                  Username
                 </InputLabel>
                 <OutlinedInput
-                  id="outlined-adornment-first-name"
-                  type="text"
-                  label="First Name"
+                  id="outlined-adornment-username"
+                  type="username"
+                  label="username"
                 />
               </FormControl>
 
+              {/* First name and last name fields */}
+              <div className="name">
+                <FormControl
+                  onChange={handleSetFirstName} // This is the first name field
+                  sx={{ m: 1, width: "25ch" }}
+                  variant="outlined"
+                  color="primary"
+                  required
+                  error={firstNameError}
+                >
+                  <InputLabel htmlFor="outlined-adornment-first-name">
+                    First Name
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-first-name"
+                    type="text"
+                    label="First Name"
+                  />
+                </FormControl>
+
+                <FormControl
+                  onChange={handleSetLastName} // This is the last name field
+                  sx={{ m: 1, width: "25ch" }}
+                  variant="outlined"
+                  color="primary"
+                  required
+                  error={lastNameError}
+                >
+                  <InputLabel htmlFor="outlined-adornment-last-name">
+                    Last Name
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-last-name"
+                    type="text"
+                    label="Last Name"
+                  />
+                </FormControl>
+              </div>
+
+              {/* Password field with show/hide password */}
+              <div className="password">
+                <FormControl
+                  onChange={handleSetPassword} // This is the password field
+                  sx={{ m: 1, width: "25ch" }}
+                  variant="outlined"
+                  color="primary"
+                  required
+                  error={passwordError}
+                >
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    autoComplete="new-password"
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
+
+                <FormControl
+                  onChange={handleVerifyPassword} // This is the confirm password field
+                  autoComplete="new-password"
+                  sx={{ m: 1, width: "25ch" }}
+                  variant="outlined"
+                  color="primary"
+                  required
+                  error={verifyPasswordError}
+                >
+                  <InputLabel htmlFor="outlined-adornment-confirm-password">
+                    Confirm Password
+                  </InputLabel>
+                  <OutlinedInput
+                    autoComplete="new-password"
+                    id="outlined-adornment-confirm-password"
+                    type={showPassword ? "text" : "password"}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Confirm Password"
+                  />
+                </FormControl>
+              </div>
+
               <FormControl
-                onChange={handleSetLastName} // This is the last name field
-                sx={{ m: 1, width: "25ch" }}
+                onChange={handleSetEmail} // This is the email field
+                sx={{ m: 1, width: "52ch" }}
                 variant="outlined"
+                FullWidth
                 color="primary"
                 required
-                error={lastNameError}
+                error={emailError}
               >
-                <InputLabel htmlFor="outlined-adornment-last-name">
-                  Last Name
+                <InputLabel htmlFor="outlined-adornment-email">
+                  email
                 </InputLabel>
                 <OutlinedInput
-                  id="outlined-adornment-last-name"
-                  type="text"
-                  label="Last Name"
+                  autoComplete="email"
+                  id="outlined-adornment-email"
+                  type="email"
+                  label="email"
                 />
               </FormControl>
             </div>
-
-            {/* Password field with show/hide password */}
-            <div className="password">
-              <FormControl
-                onChange={handleSetPassword} // This is the password field
-                sx={{ m: 1, width: "25ch" }}
-                variant="outlined"
-                color="primary"
-                required
-                error={passwordError}
-              >
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Password
-                </InputLabel>
-                <OutlinedInput
-                  autoComplete="new-password"
-                  id="outlined-adornment-password"
-                  type={showPassword ? "text" : "password"}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
-                />
-              </FormControl>
-
-              <FormControl
-                onChange={handleVerifyPassword} // This is the confirm password field
-                autoComplete="new-password"
-                sx={{ m: 1, width: "25ch" }}
-                variant="outlined"
-                color="primary"
-                required
-                error={verifyPasswordError}
-              >
-                <InputLabel htmlFor="outlined-adornment-confirm-password">
-                  Confirm Password
-                </InputLabel>
-                <OutlinedInput
-                  autoComplete="new-password"
-                  id="outlined-adornment-confirm-password"
-                  type={showPassword ? "text" : "password"}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Confirm Password"
-                />
-              </FormControl>
-            </div>
-
-            <FormControl
-              onChange={handleSetEmail} // This is the email field
-              sx={{ m: 1, width: "52ch" }}
-              variant="outlined"
-              FullWidth
-              color="primary"
-              required
-              error={emailError}
-            >
-              <InputLabel htmlFor="outlined-adornment-email">email</InputLabel>
-              <OutlinedInput
-                autoComplete="email"
-                id="outlined-adornment-email"
-                type="email"
-                label="email"
-              />
-            </FormControl>
-          </div>
-        </Box>
-        <Button
-          onClick={handleFormSubmission}
-          id="signup_button"
-          variant="contained"
-          // href="/authorize_spotify"
-          color="primary"
-          type="submit"
-          size="large"
+          </Box>
+          <Button
+            onClick={handleFormSubmission}
+            id="signup_button"
+            variant="contained"
+            // href="/authorize_spotify"
+            color="primary"
+            type="submit"
+            size="large"
+          >
+            Sign Up
+          </Button>
+        </form>
+        <Typography
+          variant="p"
+          sx={{
+            spacing: 20,
+            padding: "40px",
+          }}
         >
-          Sign Up
-        </Button>
-      </form>
-      <Typography variant="p"
-      sx={{
-        spacing: 20,
-        padding: '40px',
-      }}>
-        Already have an account?{" "}
-        <Link href='/login'  underline="hover"> {'Login'}</Link>
-      </Typography>
+          Already have an account?{" "}
+          <Link href="/login" underline="hover">
+            {" "}
+            {"Login"}
+          </Link>
+        </Typography>
       </ThemeProvider>
     </Box>
   );

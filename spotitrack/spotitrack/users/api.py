@@ -17,8 +17,6 @@ from django.contrib.auth import logout, login, authenticate
 from typing import List
 
 
-
-
 ### CLIENT AND SECRET KEYS ARE NOW STORED IN THE .env FILE ###
 client_id = base.SPOTIFY_CLIENT_ID
 client_secret = base.SPOTIFY_CLIENT_SECRET
@@ -36,13 +34,15 @@ router = Router()
 #
 #########################################################################
 
+
 # DECORATOR FOR API CALLS THAT REQUIRE AUTHENTICATION (THAT A USER EXISTS) ###
 def require_authentication(f):
     @wraps(f)
     def decorated_function(request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return JsonResponse({'isAuthenticated': False}, status=200)
+            return JsonResponse({"isAuthenticated": False}, status=200)
         return f(request, *args, **kwargs)
+
     return decorated_function
 
 
@@ -54,10 +54,11 @@ def require_authentication(f):
 #########################################################################
 class UserIn(Schema):
     username: str
-    first_name: str = ''
-    last_name: str = ''
-    password: str = ''
-    email: str = ''
+    first_name: str = ""
+    last_name: str = ""
+    password: str = ""
+    email: str = ""
+
 
 class LoginSchema(Schema):
     username: str
@@ -66,15 +67,24 @@ class LoginSchema(Schema):
 
 @api.post("/create_user")
 def create_user(request, payload: UserIn):
-    user = User(username=payload.username, email=payload.email, first_name=payload.first_name, last_name=payload.last_name)
-    user.set_password(payload.password)  # This hashes the password and stores it securely
+    user = User(
+        username=payload.username,
+        email=payload.email,
+        first_name=payload.first_name,
+        last_name=payload.last_name,
+    )
+    user.set_password(
+        payload.password
+    )  # This hashes the password and stores it securely
     user.save()
     return {"users name": user.username}
 
 
 @api.post("/login")
 def login_user(request, data: LoginSchema):
-    print(f"Attempting to log in with username: {data.username} and password: {data.password}")
+    print(
+        f"Attempting to log in with username: {data.username} and password: {data.password}"
+    )
     user = authenticate(request, username=data.username, password=data.password)
     if user is not None:
         login(request, user)
@@ -95,13 +105,11 @@ def login_user(request, data: LoginSchema):
         return JsonResponse({"error": "Invalid credentials"}, status=401)
 
 
-
-@api.get("/logout/")
+@api.get("/logout")
 @require_authentication
 def logout_user(request):
     logout(request)
-    return JsonResponse({"message": "Logged out"})
-
+    return JsonResponse({"message": "Logged out"}, content_type="application/json")
 
 
 #########################################################################
@@ -139,50 +147,54 @@ def get_artist_info(request, artist_name):
     else:
         return None
 
+
 @api.get("/playlist")
 def get_user_playlists(request):
 
     user = request.user
     access_token = user.access_token
 
-    headers = {
-            "Authorization": 'Bearer ' + access_token
-        }
-    response = requests.get('https://api.spotify.com/v1/me/playlists', headers=headers)
+    headers = {"Authorization": "Bearer " + access_token}
+    response = requests.get("https://api.spotify.com/v1/me/playlists", headers=headers)
 
     if response.status_code == 200:
         playlist_data = response.json()
         # Loop over the json and get out the specific items we need for the playlist model
         playlist_info = []
-        for playlist in playlist_data['items']:
-            image_url = playlist['images'][0]['url'] if playlist['images'] else 'https://via.placeholder.com/150'
-            author = playlist['owner']['display_name']
-            playlist_id = playlist['id']
-            playlist_name = playlist['name']
-            tracks = playlist['tracks']['total']
-            snapshot_id = playlist['snapshot_id']
+        for playlist in playlist_data["items"]:
+            image_url = (
+                playlist["images"][0]["url"]
+                if playlist["images"]
+                else "https://via.placeholder.com/150"
+            )
+            author = playlist["owner"]["display_name"]
+            playlist_id = playlist["id"]
+            playlist_name = playlist["name"]
+            tracks = playlist["tracks"]["total"]
+            snapshot_id = playlist["snapshot_id"]
 
-            playlist_info.append({
-                'author': author,
-                'playlist_id': playlist_id,
-                'playlist_name': playlist_name,
-                'number_of_tracks': tracks,
-                'owner': user.username,
-                'image': image_url,
-                'snapshot_id': snapshot_id
-            })
+            playlist_info.append(
+                {
+                    "author": author,
+                    "playlist_id": playlist_id,
+                    "playlist_name": playlist_name,
+                    "number_of_tracks": tracks,
+                    "owner": user.username,
+                    "image": image_url,
+                    "snapshot_id": snapshot_id,
+                }
+            )
 
             # UPDATING IF THERE IS A PLAYLISY
             try:
                 db_playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
                 if db_playlist.current_snapshot_id != snapshot_id:
                     playlist_instance = PlaylistInstance(
-                        playlist = db_playlist,
-                        snapshot_id = snapshot_id,
+                        playlist=db_playlist,
+                        snapshot_id=snapshot_id,
                         # WORK IN PROGRESS
-                        tracks = get_playlist_tracks(request.user, playlist_id)
-
-                )
+                        tracks=get_playlist_tracks(request.user, playlist_id),
+                    )
                 playlist_instance.save()
                 db_playlist.current_snapshot_id = snapshot_id
                 db_playlist.save()
@@ -190,21 +202,21 @@ def get_user_playlists(request):
             except:
                 owner, _ = User.objects.get_or_create(username=user.username)
                 playlist = Playlist(
-                    owner = owner,
+                    owner=owner,
                     playlist_id=playlist_id,
-                    name = playlist_name,
-                    number_of_tracks = tracks,
-                    author = author,
-                    image = image_url,
-                    current_snapshot_id = snapshot_id
+                    name=playlist_name,
+                    number_of_tracks=tracks,
+                    author=author,
+                    image=image_url,
+                    current_snapshot_id=snapshot_id,
                 )
                 playlist.save()
 
                 playlist_instance = PlaylistInstance(
-                        playlist = playlist,
-                        snapshot_id = snapshot_id,
-                        # WORK IN PROGRESS
-                        tracks = get_playlist_tracks(request.user, playlist_id)
+                    playlist=playlist,
+                    snapshot_id=snapshot_id,
+                    # WORK IN PROGRESS
+                    tracks=get_playlist_tracks(request.user, playlist_id),
                 )
                 playlist_instance.save()
 
@@ -212,7 +224,6 @@ def get_user_playlists(request):
     else:
 
         return response.status_code, {"error": "Failed to fetch user playlists"}
-
 
 
 @api.get("/tracks/")
@@ -227,20 +238,25 @@ def get_playlist_tracks(request, playlist_id: str):
     results = sp.playlist_tracks(playlist_id)
     # Extract relevant information from tracks
 
-
     tracks_info = []
     for item in results["items"]:
         track = item["track"]
         minutes = track["duration_ms"] // 60000  # Integer division to get full minutes
-        seconds = (track["duration_ms"] % 60000) // 1000  # Modulus to get remainder in milliseconds, then convert to seconds
-        duration_formatted = f"{minutes}:{seconds:02}"   # Converts ms to minutes and rounds to 2 decimal places
+        seconds = (
+            track["duration_ms"] % 60000
+        ) // 1000  # Modulus to get remainder in milliseconds, then convert to seconds
+        duration_formatted = f"{minutes}:{seconds:02}"  # Converts ms to minutes and rounds to 2 decimal places
         tracks_info.append(
             {
                 "name": track["name"],
                 "id": track["id"],
                 "artists": [artist["name"] for artist in track["artists"]],
                 "album": track["album"]["name"],
-                "album_art_url": track["album"]["images"][0]["url"] if track["album"]["images"] else None,
+                "album_art_url": (
+                    track["album"]["images"][0]["url"]
+                    if track["album"]["images"]
+                    else None
+                ),
                 "preview_url": track["preview_url"] if "preview_url" in track else None,
                 "duration": duration_formatted,
             }
@@ -248,14 +264,17 @@ def get_playlist_tracks(request, playlist_id: str):
 
     return tracks_info
 
+
 from ninja import ModelSchema
 from typing import List
 
-#Schema for printing out playlist instances for the playlistInstance API endpoint
+
+# Schema for printing out playlist instances for the playlistInstance API endpoint
 class PlaylistInstanceSchema(ModelSchema):
     class Meta:
         model = PlaylistInstance
         fields = "__all__"
+
 
 @api.get("/playlistInstances/", response=List[PlaylistInstanceSchema])
 def get_playlist_tracks(request, playlist_id: str):
@@ -274,6 +293,7 @@ def get_playlist_tracks(request, playlist_id: str):
 #                           OAUTH API
 #
 #########################################################################
+
 
 # THIS REQUESTS AN AUTHORAZATION TOKEN TO TURN INTO AN ACCESS TOKEN
 @api.get("/authorization")
@@ -311,6 +331,7 @@ def request_user_authorization(request):
 
     return authorization_url
 
+
 # THIS IS THE CALLBACK FUNCTION TO TURN A AUTH CODE INTO AN ACCESS TOKEN
 @api.get("/callback/")
 def handle_callback(request, code: str):
@@ -342,10 +363,10 @@ def handle_callback(request, code: str):
     # Parse response and return access token information
     if response.status_code == 200:
 
-        print('THE USER', request.user)
+        print("THE USER", request.user)
         token_data = response.json()
-        request.user.set_access_token(token_data['access_token'])
-        request.user.set_refresh_token(token_data['refresh_token'])
+        request.user.set_access_token(token_data["access_token"])
+        request.user.set_refresh_token(token_data["refresh_token"])
         request.user.save()
         return redirect("http://127.0.0.1:8000/complete_signup")
         return token_data
@@ -355,36 +376,33 @@ def handle_callback(request, code: str):
         }, response.status_code
 
 
-
 # THIS API CALL REFRESHES THE ACCESS TOKEN
-@api.get("/refresh/")
+@api.get("/refresh")
 def refresh_token(request):
     refresh_token = request.user.refresh_token
 
     # Construct request payload
-    auth_payload = {
-        'grant_type': 'refresh_token',
-        'refresh_token': refresh_token
-    }
+    auth_payload = {"grant_type": "refresh_token", "refresh_token": refresh_token}
 
     # Construct headers with basic authentication
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + base64.b64encode((client_id + ':' + client_secret).encode()).decode()
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic "
+        + base64.b64encode((client_id + ":" + client_secret).encode()).decode(),
     }
 
     # Make POST request to Spotify API
-    response = requests.post('https://accounts.spotify.com/api/token', data=auth_payload, headers=headers)
+    response = requests.post(
+        "https://accounts.spotify.com/api/token", data=auth_payload, headers=headers
+    )
 
     # Check if request was successful
     if response.status_code == 200:
         token_data = response.json()
-        access_token = token_data['access_token']
-        refreshed_refresh_token = token_data.get('refresh_token', refresh_token)
-        # request.user.set_access_token(access_token)
-        # request.user.set_refresh_token(refreshed_refresh_token)
+        access_token = token_data["access_token"]
+        refreshed_refresh_token = token_data.get("refresh_token", refresh_token)
+        request.user.set_access_token(access_token)
+        request.user.set_refresh_token(refreshed_refresh_token)
+        return
     else:
-        return {
-            'error': 'Failed to refresh access token'
-        }
-
+        return {"error": "Failed to refresh access token"}
