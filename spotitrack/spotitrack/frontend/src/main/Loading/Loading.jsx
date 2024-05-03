@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { ThemeProvider } from "@emotion/react";
 mirage.register();
 
-Loading.prototype = {
+Loading.propTypes = {
   theme: PropTypes.object.isRequired,
 };
 

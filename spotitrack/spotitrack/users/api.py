@@ -80,6 +80,12 @@ def create_user(request, payload: UserIn):
     return {"users name": user.username}
 
 
+@api.get("/users")
+def get_users(request, username: str):
+    users = User.objects.all()
+    return users
+
+
 @api.post("/login")
 def login_user(request, data: LoginSchema):
     print(
@@ -312,7 +318,7 @@ def request_user_authorization(request):
     - str: The authorization URL to redirect the user to.
     """
     redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
-    scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative"
+    scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read "
 
     # Construct query parameters
     params = {
@@ -403,6 +409,6 @@ def refresh_token(request):
         refreshed_refresh_token = token_data.get("refresh_token", refresh_token)
         request.user.set_access_token(access_token)
         request.user.set_refresh_token(refreshed_refresh_token)
-        return
+        return {"access_token": access_token, "refresh_token": refreshed_refresh_token}
     else:
         return {"error": "Failed to refresh access token"}

@@ -1,18 +1,15 @@
 import Typography from "@mui/material/Typography";
 import { ThemeProvider } from "@mui/system";
-import PropTypes from "prop-types";
 
 import Button from "@mui/material/Button";
 import { Box, Stack } from "@mui/material";
 import SpotifyLogo from "./assets/spotify-logo.svg"; // Import the SVG file
+// import { useUser } from "../../UserProvider";
+import { useTheme } from "@mui/material/styles";
 
-SpotifyAuthorization.propTypes = {
-  theme: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-};
-
-function SpotifyAuthorization(props) {
-  const user = props.user;
+function SpotifyAuthorization() {
+  // const user = useUser();
+  const theme = useTheme();
 
   const callOAuth = async () => {
     try {
@@ -36,7 +33,7 @@ function SpotifyAuthorization(props) {
   };
 
   return (
-    <ThemeProvider theme={props.theme}>
+    <ThemeProvider theme={theme}>
       <Box
         sx={{
           padding: "200px",

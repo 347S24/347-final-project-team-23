@@ -30,8 +30,8 @@ const AuthButton = () => {
       variant="contained"
       color="primary"
       sx={{
-        padding: "40px", // Adjust padding as needed
-        display: "flex", // Ensures the icon centers in the button
+        padding: "40px",
+        display: "flex",
         justifyContent: "center",
       }}
       onClick={callOAuth}
@@ -40,8 +40,8 @@ const AuthButton = () => {
         src={SpotifyLogo}
         alt="Spotify logo"
         style={{
-          width: "80px", // Adjust size as needed
-          height: "80px", // Adjust size as needed
+          width: "80px",
+          height: "80px",
         }}
       />
     </Button>

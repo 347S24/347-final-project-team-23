@@ -1,59 +1,40 @@
-// React core imports
-import { useEffect, useState } from "react";
-
-// React Router DOM
-import { useNavigate, useLocation } from "react-router-dom";
-
-// PropTypes
-import PropTypes from "prop-types";
-
-// Material-UI System
-import { ThemeProvider, Box } from "@mui/system";
-
-// Material-UI Components
-import {
-  Grid,
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-  CardActionArea,
-  Stack,
-} from "@mui/material";
-
-// Custom Components and Assets
-import NavigationBar from "../../header/NavigationBar.jsx";
+import { Box, Typography, Grid, Paper, styled } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Loading from "../Loading/Loading.jsx";
-import AuthButton from "../AuthButton/AuthButton.jsx";
+import { ThemeProvider, useTheme } from "@mui/material/styles";
+import TopArtists from "./DashboardComponents/TopArtists.jsx";
+import PlaylistsPreview from "./DashboardComponents/PlaylistsPreview.jsx";
+import { useMediaQuery } from "@mui/material";
+import { useUser } from "../../UserProvider.jsx";
+import RecentlyPlayedPreview from "./DashboardComponents/RecentlyPlayedPreview.jsx";
+// import TrackInfoDialog from "../CustomComponents/TrackInfoDialog.jsx";
 
-Playlists.propTypes = {
-  theme: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-};
+const Item = styled(Paper)(({ theme }) => ({
+  // backgroundColor: theme.palette.mode === "dark" ? "#303233" : "#fff",
+  ...theme.typography.body2,
+  padding: theme.spacing(2),
+  textAlign: "center",
+  color: theme.palette.text.secondary,
+  // border: "2px solid",
+  borderColor: theme.palette.primary.main,
+}));
 
-function Playlists(props) {
-  const theme = props.theme;
+function Dashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const { startTokenRefreshCycle } = useUser();
 
-  // User information and State tracking
-  const location = useLocation();
-  const user = location.state ? location.state.user : null;
+  useEffect(() => {
+    startTokenRefreshCycle();
+  }, [startTokenRefreshCycle]);
 
-  // State tracking for loading and error handling
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // API calls
   const [playlists, setPlaylists] = useState([]);
-
   useEffect(() => {
     async function fetchData() {
       try {
-        // refresh token
-        const refRes = await fetch("/users/api/refresh");
-        if (!refRes.ok) throw new Error("Failed to refresh token");
-        console.log("refreshing token");
-
         // fetch playlists
         const res = await fetch(`/users/api/playlist`);
         if (!res.ok) throw new Error("Failed to fetch playlists");
@@ -68,17 +49,30 @@ function Playlists(props) {
     fetchData();
   }, []);
 
-  const handlePlaylistClick = (playlistId) => {
-    console.log("Playlist clicked: ", playlistId);
-    navigate(`/playlist`, { state: { user: user, playlistId: playlistId } });
-  };
+  const show4 = useMediaQuery(theme.breakpoints.down(629));
+  const show6 = useMediaQuery(theme.breakpoints.between(630, 812));
+  const show8 = useMediaQuery(theme.breakpoints.between(812, 993));
+  const show10 = useMediaQuery(theme.breakpoints.between(994, 1175));
+  const show12 = useMediaQuery(theme.breakpoints.between(1176, 1358));
+  const show14 = useMediaQuery(theme.breakpoints.between(1359, 1539));
+  const show16 = useMediaQuery(theme.breakpoints.up(1540));
 
-  if (!user) {
-    // Handle the scenario when no user data is passed
-    console.log("No user data available.");
-    return <div>No user data available. Please login again.</div>;
+  let numberOfPlaylistsToShow;
+  if (show4) {
+    numberOfPlaylistsToShow = 4; // Show 2 playlists on small screens
+  } else if (show6) {
+    numberOfPlaylistsToShow = 6; // Show 3 playlists on medium screens
+  } else if (show8) {
+    numberOfPlaylistsToShow = 8; // Show 4 playlists on large screens
+  } else if (show10) {
+    numberOfPlaylistsToShow = 10; // Show 5 playlists on extra large screens
+  } else if (show12) {
+    numberOfPlaylistsToShow = 12; // Show 6 playlists on extra extra large screens
+  } else if (show14) {
+    numberOfPlaylistsToShow = 14; // Show 7 playlists on extra extra extra large screens
+  } else if (show16) {
+    numberOfPlaylistsToShow = 16; // Show 8 playlists on extra extra extra extra large screens
   }
-
   if (loading) {
     return (
       <Box
@@ -94,164 +88,62 @@ function Playlists(props) {
       </Box>
     );
   }
-
-  if (error) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexDirection: "column",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
-        <Typography variant="h4" color="error">
-          Error: {error} Please reauthorize SpotiTrack
-        </Typography>
-        <AuthButton />
-      </Box>
-    );
-  }
-  console.log("Playlists: ", playlists);
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "top",
-          spacing: 20,
-        }}
-      >
-        <NavigationBar theme={theme} />
-        <Box sx={{ flexGrow: 1, minWidth: 300, padding: "40px" }}>
-          {/* Header with user information and oauth button */}
+      <Box sx={{ flexGrow: 1, p: 4 }}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {/* Welcome message */}
+          <Grid item xs={12} spacing={3}>
+            <Item>
+              <Typography variant="h4">Dashboard</Typography>
+            </Item>
+          </Grid>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h3">Welcome, {user.first_name}!</Typography>
-          </Box>
+          {/* Spotify stats */}
+          <Grid item xs={12}>
+            <Item>
+              <PlaylistsPreview
+                // conditionally render the number of thumbnails based on screen size
 
-          {/* Available user palylists */}
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "left",
-              justifyContent: "top",
-              spacing: 20,
-              padding: "10px",
-            }}
-          >
-            <Typography variant="h4">Your Playlists</Typography>
-          </Box>
+                playlists={playlists.slice(0, numberOfPlaylistsToShow)}
+                onExploreAll={() => navigate("/playlists")}
+              />
+            </Item>
+          </Grid>
 
-          <Box
-            sx={{
-              flexGrow: 1,
-              p: 2,
-              bgcolor: "secondary",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Grid
-              container
-              // spacing={{ xs: 2, md: 2 }}
-              columns={{ xs: 4, sm: 12, md: 12, lg: 12, xl: 12 }}
-            >
-              {playlists.map((playlist, index) => (
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={4}
-                  xl={3}
-                  key={index}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Card
-                    sx={{
-                      width: 300,
-                      position: "relative", // This makes the positioning of the children absolute relative to the card
-                    }}
-                  >
-                    <CardActionArea
-                      onClick={() => handlePlaylistClick(playlist.playlist_id)}
-                    >
-                      <CardMedia
-                        component="img"
-                        height="300"
-                        image={
-                          playlist.image || "https://via.placeholder.com/140"
-                        } // Default image if none is provided
-                        alt={playlist.name}
-                      />
+          {/* Playlist preview */}
+          <Grid item xs={12}>
+            <Item>
+              <TopArtists />
+              <p>fdifns</p>
+            </Item>
+          </Grid>
 
-                      {/* This CardContent will overlay the CardMedia */}
-                      <CardContent
-                        sx={{
-                          position: "absolute", // Position absolutely to overlay on the image
-                          bottom: 0, // Align to the bottom of the Card
-                          left: 0, // Align to the left of the Card
-                          width: "100%", // Take full width of the Card
-                          backgroundImage:
-                            "linear-gradient(rgba(0, 0, 0, 0.3) 15%, rgba(0, 0, 0, 0.7) 40%, rgba(0, 0, 0, 0.9))",
-                          color: "white", // Text color
-                          padding: 2, // Padding inside the CardContent
-                        }}
-                      >
-                        <Stack
-                          sx={{
-                            display: "flex",
-                            justifyContent: "flex-start",
-                            alignItems: "flex-start",
-                          }}
-                        >
-                          <Typography
-                            variant="h6"
-                            component="div"
-                            sx={{
-                              textShadow: "1px 1px 2px black",
-                            }}
-                          >
-                            {playlist.playlist_name.length > 22
-                              ? `${playlist.playlist_name.substring(0, 21)}...`
-                              : playlist.playlist_name}
-                          </Typography>
-                          <Typography variant="body2" color={"primary"}>
-                            by {playlist.author}
-                          </Typography>
-                          <Typography variant="body2" color={"textSecondary"}>
-                            {playlist.number_of_tracks} tracks
-                          </Typography>
-                        </Stack>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </Box>
+          {/* Recent Changes */}
+          <Grid item xs={6}>
+            <Item>
+              <RecentlyPlayedPreview />
+            </Item>
+          </Grid>
+
+          {/* Something else */}
+          <Grid item xs={6}>
+            <Item>okay</Item>
+          </Grid>
+        </Grid>
       </Box>
     </ThemeProvider>
   );
 }
-export default Playlists;
+export default Dashboard;

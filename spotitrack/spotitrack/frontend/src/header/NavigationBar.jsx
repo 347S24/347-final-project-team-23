@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useCallback } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -13,46 +12,26 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import PropTypes from "prop-types";
 import { ThemeProvider } from "@mui/system";
+import { useUser } from "../UserProvider";
+import { useTheme } from "@mui/material/styles";
 
-NavigationBar.propTypes = {
-  theme: PropTypes.object.isRequired,
-};
-// These will decide whats placed in the nav bar
-let pages = [];
-let settings = [];
-
-function NavigationBar(props) {
-  // Grabs user (null if logged out)
-  const location = useLocation();
-  const user = location.state ? location.state.user : null;
-  const theme = props.theme;
-
-  console.log("user in the nav bar: ", user);
-
-  const logout = useCallback(async () => {
-    try {
-      const response = await fetch("users/api/logout", { method: "GET" });
-      const text = await response.text();
-      console.log("Response text:", text);
-      if (response.ok) {
-        const data = JSON.parse(text);
-        console.log("Logged out successfully", data);
-        navigate("/");
-      } else {
-        throw new Error("Failed to log out");
-      }
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  }, []);
+function NavigationBar() {
+  let pages = [];
+  let settings = [];
+  const { user, logout } = useUser();
+  const theme = useTheme();
 
   if (user) {
     settings = ["Logout"];
-    pages = [];
+    pages = [
+      { label: "Dashboard", to: "/dashboard" },
+      { label: "Playlists", to: "/playlists" },
+      { label: "Recent Tracks", to: "/recent-tracks" },
+      { label: "Top Tracks", to: "/top-tracks" },
+    ];
   } else {
     settings = ["Login"];
     pages = [];
@@ -79,19 +58,22 @@ function NavigationBar(props) {
   const navigate = useNavigate();
 
   const handleLoginSignupClick = (route) => {
-    if (route === "logout") {
+    if (route === "Logout") {
       // For now, just navigate to the home page
       // navigate("/");
       logout();
-
+      console.log("route:", route);
+      navigate("/");
       handleCloseUserMenu();
       return;
     } else {
+      console.log("route:", route);
       navigate(`/${route}`); // Navigate to the sign-in/sign-up page
       handleCloseUserMenu(); // Assuming you have this function to close the menu
     }
   };
 
+  console.log("user:", user);
   // component
   return (
     // Small (mobile) nav bar
@@ -150,13 +132,8 @@ function NavigationBar(props) {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page.anchor} onClick={handleCloseNavMenu}>
-                    <Link
-                      to={page.to}
-                      onClick={() => navigate(`/${page.anchor.toLowerCase()}`)}
-                    >
-                      <Typography textAlign="center">{page.label}</Typography>
-                    </Link>
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">{page.label}</Typography>
                   </MenuItem>
                 ))}
               </Menu>
@@ -184,10 +161,8 @@ function NavigationBar(props) {
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
-                <MenuItem key={page.anchor}>
-                  <Link to={page.to} onClick={() => page.anchor}>
-                    <Typography textAlign="center">{page.label}</Typography>
-                  </Link>
+                <MenuItem key={page} onClick={() => navigate(page.to)}>
+                  <Typography textAlign="center">{page.label}</Typography>
                 </MenuItem>
               ))}
             </Box>
@@ -220,9 +195,7 @@ function NavigationBar(props) {
                   {settings.map((setting) => (
                     <MenuItem
                       key={setting}
-                      onClick={() =>
-                        handleLoginSignupClick(setting.toLowerCase())
-                      }
+                      onClick={() => handleLoginSignupClick(setting)}
                     >
                       <Typography textAlign="center">{setting}</Typography>
                     </MenuItem>

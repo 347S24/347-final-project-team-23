@@ -73,7 +73,6 @@ export const getTheme = (mode) =>
           },
         },
       },
-      // You can add additional components here if needed
       MuiLink: {
         styleOverrides: {
           root: {
@@ -101,6 +100,16 @@ export const getTheme = (mode) =>
           root: {
             padding: "8px", // Padding around card actions
             backgroundColor: "background.default", // Sets the background color of card actions
+          },
+        },
+      },
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            color: "text.primary", // Sets the text color of menu items
+            "&:focus": {
+              outline: "none", // Removes outline on focus
+            },
           },
         },
       },

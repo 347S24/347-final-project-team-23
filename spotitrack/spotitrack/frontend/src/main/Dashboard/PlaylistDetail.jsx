@@ -16,23 +16,26 @@ import "./../Loading/Loading.jsx";
 import Loading from "./../Loading/Loading.jsx";
 import { ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
+import { useTheme } from "@mui/material/styles";
+import { useUser } from "../../UserProvider.jsx";
 
 PlaylistDetail.propTypes = {
-  theme: PropTypes.object.isRequired,
+  playlistId: PropTypes.string,
 };
 
 function PlaylistDetail(props) {
-  const theme = props.theme;
+  const theme = useTheme();
   const location = useLocation();
-  const { playlistId } = location.state || {};
+  const { playlistId } = location.state || props.playlistId || {};
   const [trackDetails, setTrackDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [playingUrl, setPlayingUrl] = useState("");
   const [playlistInfo, setPlaylistInfo] = useState({});
   const [audio] = useState(new Audio());
-  const user = location.state ? location.state.user : null;
+  const { user } = useUser();
 
+  console.log("User in playlist details: ", user);
   useEffect(() => {
     const fetchPlaylistInfo = async () => {
       try {
@@ -61,7 +64,7 @@ function PlaylistDetail(props) {
     if (playlistId) {
       fetchPlaylistInfo();
     }
-  }, [playlistId]);
+  }, [playlistId, user.access_token]);
 
   useEffect(() => {
     async function fetchTrackDetails() {
@@ -164,7 +167,7 @@ function PlaylistDetail(props) {
               <Badge
                 badgeContent={index + 1}
                 max={999}
-                color="secondary"
+                color="primary"
                 anchorOrigin={{ vertical: "top", horizontal: "left" }}
               >
                 <Card raised sx={{ display: "flex", height: 151, width: 450 }}>

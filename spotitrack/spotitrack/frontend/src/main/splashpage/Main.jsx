@@ -1,14 +1,10 @@
 import { ThemeProvider } from "@mui/system";
-import PropTypes from "prop-types";
+import { useTheme } from "@mui/material/styles";
 
 import Home from "./Home";
 
-Main.propTypes = {
-  theme: PropTypes.object.isRequired,
-};
-
-function Main(props) {
-  const theme = props.theme;
+function Main() {
+  const theme = useTheme();
   return (
     <ThemeProvider theme={theme}>
       <div className="Main">

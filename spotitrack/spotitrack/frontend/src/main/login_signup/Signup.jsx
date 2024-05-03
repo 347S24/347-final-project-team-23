@@ -1,9 +1,6 @@
 // React Router DOM
 import { useNavigate } from "react-router-dom";
 
-// PropTypes
-import PropTypes from "prop-types";
-
 // Material-UI Components
 import {
   Box,
@@ -24,14 +21,11 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import React from "react";
+import { useTheme } from "@mui/material/styles";
 
-Signup.propTypes = {
-  theme: PropTypes.object.isRequired,
-};
-
-function Signup(props) {
+function Signup() {
   // Theme and user variables
-  const theme = props.theme;
+  const theme = useTheme();
   let user = null;
   const navigate = useNavigate();
 

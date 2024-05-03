@@ -4,9 +4,6 @@ import React from "react";
 // React Router DOM
 import { useNavigate } from "react-router-dom";
 
-// PropTypes
-import PropTypes from "prop-types";
-
 // Material-UI Components
 import {
   Box,
@@ -22,18 +19,18 @@ import {
   ThemeProvider,
   Stack,
 } from "@mui/material";
+import { useUser } from "./../../UserProvider.jsx";
 
 // Material-UI Icons
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { useTheme } from "@mui/material/styles";
 
-Login.propTypes = {
-  theme: PropTypes.object.isRequired,
-};
+function Login() {
+  const theme = useTheme();
 
-function Login(props) {
-  const theme = props.theme;
   const navigate = useNavigate();
+  const { user, login } = useUser();
 
   // Error, show password, click states
   const [error, setError] = React.useState(false);
@@ -65,7 +62,6 @@ function Login(props) {
       setError(true);
       return;
     }
-    console.log("Logging in with:", username, password);
     fetch("/users/api/login", {
       method: "POST",
       headers: {
@@ -81,7 +77,8 @@ function Login(props) {
         if (data.error) {
           setError(true); // Set a state to show an error message
         } else {
-          navigate("/dashboard", { state: { user: data.user } });
+          login(data.user);
+          navigate("/dashboard");
         }
       })
       .catch((error) => {

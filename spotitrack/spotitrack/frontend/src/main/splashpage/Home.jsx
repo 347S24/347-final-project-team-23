@@ -1,19 +1,12 @@
 import { ThemeProvider } from "@mui/system";
-import PropTypes from "prop-types";
 import { Box, Typography, Stack, Button } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
-import NavigationBar from "../../header/NavigationBar";
-
-Home.propTypes = {
-  theme: PropTypes.object.isRequired,
-};
-
-function Home(props) {
-  const theme = props.theme;
+function Home() {
+  const theme = useTheme();
 
   return (
     <ThemeProvider theme={theme}>
-      <NavigationBar theme={theme} />
       <Box
         sx={{
           flexGrow: 1,
