@@ -30,7 +30,7 @@ function Login() {
   const theme = useTheme();
 
   const navigate = useNavigate();
-  const { user, login } = useUser();
+  const { updateUser, login } = useUser();
 
   // Error, show password, click states
   const [error, setError] = React.useState(false);
@@ -54,37 +54,55 @@ function Login() {
     setPassword(event.target.value);
   };
 
-  // Form submission handler
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-
-    if (username === "" || password === "") {
-      setError(true);
-      return;
-    }
-    fetch("/users/api/login", {
-      method: "POST",
+  // Token refresh logic
+  const refreshToken = async () => {
+    const refresh = await fetch("/users/api/refresh", {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Login failed");
-        return response.json();
-      })
-      .then((data) => {
-        if (data.error) {
-          setError(true); // Set a state to show an error message
-        } else {
-          login(data.user);
-          navigate("/dashboard");
-        }
-      })
-      .catch((error) => {
-        console.error("Error during login:", error);
+    });
+    const data = await refresh.json();
+    if (!refresh.ok) {
+      throw new Error("Failed to refresh token");
+    } else {
+      console.log("Token refreshed");
+
+      await updateUser(data);
+    }
+  };
+
+  // Form submission handler
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      if (username === "" || password === "") {
         setError(true);
+        return;
+      }
+      const response = await fetch("/users/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
       });
+
+      if (!response.ok) throw new Error("Login failed");
+
+      const data = await response.json();
+      if (data.error) {
+        setError(true);
+      } else {
+        await login(data.user);
+        await refreshToken();
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      setError(true);
+    }
   };
 
   return (

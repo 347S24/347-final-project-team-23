@@ -8,7 +8,7 @@ import PlaylistsPreview from "./DashboardComponents/PlaylistsPreview.jsx";
 import { useMediaQuery } from "@mui/material";
 import { useUser } from "../../UserProvider.jsx";
 import RecentlyPlayedPreview from "./DashboardComponents/RecentlyPlayedPreview.jsx";
-// import TrackInfoDialog from "../CustomComponents/TrackInfoDialog.jsx";
+import UserBanner from "./DashboardComponents/UserBanner.jsx";
 
 const Item = styled(Paper)(({ theme }) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#303233" : "#fff",
@@ -18,12 +18,15 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
   // border: "2px solid",
   borderColor: theme.palette.primary.main,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
 }));
 
 function Dashboard() {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { startTokenRefreshCycle } = useUser();
+  const { startTokenRefreshCycle, user } = useUser();
 
   useEffect(() => {
     startTokenRefreshCycle();
@@ -47,7 +50,7 @@ function Dashboard() {
       }
     }
     fetchData();
-  }, []);
+  }, [user]);
 
   const show4 = useMediaQuery(theme.breakpoints.down(629));
   const show6 = useMediaQuery(theme.breakpoints.between(630, 812));
@@ -56,23 +59,25 @@ function Dashboard() {
   const show12 = useMediaQuery(theme.breakpoints.between(1176, 1358));
   const show14 = useMediaQuery(theme.breakpoints.between(1359, 1539));
   const show16 = useMediaQuery(theme.breakpoints.up(1540));
+  const fullBlock = useMediaQuery(theme.breakpoints.down(812));
 
   let numberOfPlaylistsToShow;
   if (show4) {
-    numberOfPlaylistsToShow = 4; // Show 2 playlists on small screens
+    numberOfPlaylistsToShow = 4;
   } else if (show6) {
-    numberOfPlaylistsToShow = 6; // Show 3 playlists on medium screens
+    numberOfPlaylistsToShow = 6;
   } else if (show8) {
-    numberOfPlaylistsToShow = 8; // Show 4 playlists on large screens
+    numberOfPlaylistsToShow = 8;
   } else if (show10) {
-    numberOfPlaylistsToShow = 10; // Show 5 playlists on extra large screens
+    numberOfPlaylistsToShow = 10;
   } else if (show12) {
-    numberOfPlaylistsToShow = 12; // Show 6 playlists on extra extra large screens
+    numberOfPlaylistsToShow = 12;
   } else if (show14) {
-    numberOfPlaylistsToShow = 14; // Show 7 playlists on extra extra extra large screens
+    numberOfPlaylistsToShow = 14;
   } else if (show16) {
-    numberOfPlaylistsToShow = 16; // Show 8 playlists on extra extra extra extra large screens
+    numberOfPlaylistsToShow = 16;
   }
+
   if (loading) {
     return (
       <Box
@@ -88,7 +93,7 @@ function Dashboard() {
       </Box>
     );
   }
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p>Error: {error} </p>;
 
   return (
     <ThemeProvider theme={theme}>
@@ -100,46 +105,36 @@ function Dashboard() {
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-start",
           }}
         >
           {/* Welcome message */}
           <Grid item xs={12} spacing={3}>
-            <Item>
-              <Typography variant="h4">Dashboard</Typography>
-            </Item>
+            <UserBanner />
           </Grid>
 
-          {/* Spotify stats */}
+          {/* Playlists */}
           <Grid item xs={12}>
             <Item>
               <PlaylistsPreview
-                // conditionally render the number of thumbnails based on screen size
-
                 playlists={playlists.slice(0, numberOfPlaylistsToShow)}
                 onExploreAll={() => navigate("/playlists")}
               />
             </Item>
           </Grid>
 
-          {/* Playlist preview */}
-          <Grid item xs={12}>
+          {/* Top weekly artists */}
+          <Grid item xs={fullBlock ? 12 : 6}>
             <Item>
               <TopArtists />
-              <p>fdifns</p>
             </Item>
           </Grid>
 
-          {/* Recent Changes */}
-          <Grid item xs={6}>
+          {/* Recently Played */}
+          <Grid item xs={fullBlock ? 12 : 6}>
             <Item>
               <RecentlyPlayedPreview />
             </Item>
-          </Grid>
-
-          {/* Something else */}
-          <Grid item xs={6}>
-            <Item>okay</Item>
           </Grid>
         </Grid>
       </Box>

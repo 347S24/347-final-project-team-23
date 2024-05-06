@@ -51,9 +51,13 @@ function Playlists() {
     fetchData();
   }, []);
 
+  // const handlePlaylistClick = (playlistId) => {
+  //   console.log("Playlist clicked: ", playlistId);
+  //   navigate(`/playlist`, { state: { user: user, playlistId: playlistId } });
+  // };
   const handlePlaylistClick = (playlistId) => {
     console.log("Playlist clicked: ", playlistId);
-    navigate(`/playlist`, { state: { user: user, playlistId: playlistId } });
+    navigate(`/playlist-history/${playlistId}`);
   };
 
   if (loading) {

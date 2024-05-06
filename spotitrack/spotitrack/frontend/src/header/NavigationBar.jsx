@@ -72,8 +72,6 @@ function NavigationBar() {
       handleCloseUserMenu(); // Assuming you have this function to close the menu
     }
   };
-
-  console.log("user:", user);
   // component
   return (
     // Small (mobile) nav bar

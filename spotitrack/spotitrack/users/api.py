@@ -13,7 +13,7 @@ from config.settings import base
 from functools import wraps
 from django.http import JsonResponse
 from django.contrib.auth import logout, login, authenticate
-
+import json
 from typing import List
 
 
@@ -201,9 +201,9 @@ def get_user_playlists(request):
                         # WORK IN PROGRESS
                         tracks=get_playlist_tracks(request.user, playlist_id),
                     )
-                playlist_instance.save()
-                db_playlist.current_snapshot_id = snapshot_id
-                db_playlist.save()
+                    playlist_instance.save()
+                    db_playlist.current_snapshot_id = snapshot_id
+                    db_playlist.save()
             # IF NO PLAYLIST CREATE A PLAYLIST AND ITS INSTANCE
             except:
                 owner, _ = User.objects.get_or_create(username=user.username)
@@ -267,7 +267,6 @@ def get_playlist_tracks(request, playlist_id: str):
                 "duration": duration_formatted,
             }
         )
-
     return tracks_info
 
 
@@ -283,14 +282,87 @@ class PlaylistInstanceSchema(ModelSchema):
 
 
 @api.get("/playlistInstances/", response=List[PlaylistInstanceSchema])
-def get_playlist_tracks(request, playlist_id: str):
+def get_playlist_instances(request, playlist_id: str):
     db_playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
     playlist_instances = []
     for pi in PlaylistInstance.objects.all():
         if pi.playlist_id == db_playlist.playlist_id:
             playlist_instances.append(pi)
+        print("here")
         print(playlist_instances)
     return playlist_instances
+
+
+@api.post("/playlists/{playlist_id}/add-track")
+def add_track_to_playlist(request, playlist_id):
+    """
+    Add tracks to a user's Spotify playlist.
+    """
+    user = request.user
+    track_uris = request.data.get("uris", [])
+
+    if not track_uris:
+        return {"error": "No track URIs provided"}
+
+    spotify_api_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    headers = {
+        "Authorization": f"Bearer {user.access_token}",
+        "Content-Type": "application/json",
+    }
+    data = {"uris": track_uris.split(",")}
+
+    response = requests.post(spotify_api_url, headers=headers, json=data)
+
+    if response.status_code == 201:
+        return {
+            "message": "Tracks added successfully",
+            "snapshot_id": response.json().get("snapshot_id"),
+        }
+    else:
+        return {
+            "error": "Failed to add tracks to the playlist",
+            "details": response.json(),
+        }
+
+
+@api.get("/playlists/{playlist_id}/history")
+def get_playlist_history(request, playlist_id: str):
+    playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
+    instances = PlaylistInstance.objects.filter(playlist=playlist).order_by(
+        "-date_added"
+    )
+    history = []
+    previous_instance = None
+
+    for instance in instances:
+        # Handle data correctly based on its type
+        if isinstance(instance.tracks, str):
+            try:
+                tracks = json.loads(instance.tracks)  # Decoding JSON here
+            except json.JSONDecodeError:
+                print("Error decoding JSON. Incorrect format.")
+                tracks = []  # Default to empty list if there's an error
+        else:
+            # Assuming it might be already a Python dict (not recommended)
+            tracks = instance.tracks or []
+
+        changes = (
+            instance.compare_to(previous_instance)
+            if previous_instance
+            else {"added": tracks, "removed": [], "reordered": []}
+        )
+        history.append(
+            {
+                "instance_id": instance.id,
+                "snapshot_id": instance.snapshot_id,
+                "date_added": instance.date_added.strftime("%Y-%m-%d %H:%M:%S"),
+                "changes": changes,
+                "tracks": tracks,
+            }
+        )
+        previous_instance = instance
+
+    return {"playlist_name": playlist.name, "history": history}
 
 
 #########################################################################
@@ -318,7 +390,18 @@ def request_user_authorization(request):
     - str: The authorization URL to redirect the user to.
     """
     redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
-    scope = "user-read-private user-read-email playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read "
+    scope = """
+    user-read-private
+    user-read-email
+    playlist-read-private
+    playlist-read-collaborative
+    user-read-recently-played
+    user-top-read
+    user-library-modify
+    user-library-read
+    user-follow-modify
+    """
+    scope = scope.replace("\n", "")
 
     # Construct query parameters
     params = {

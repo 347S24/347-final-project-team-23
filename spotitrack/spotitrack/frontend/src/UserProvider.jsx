@@ -15,6 +15,17 @@ export const UserProvider = ({ children }) => {
     return savedUserData ? JSON.parse(savedUserData) : null;
   });
 
+  const updateUser = (newUserData) => {
+    return new Promise((resolve) => {
+      setUser((prev) => {
+        const updatedUser = { ...prev, ...newUserData };
+        localStorage.setItem("userData", JSON.stringify(updatedUser));
+        return updatedUser;
+      });
+      resolve(); // Resolve the promise after setting the user
+    });
+  };
+
   /*Login function for user state*/
   const login = (userData) => {
     localStorage.setItem("userData", JSON.stringify(userData));
@@ -84,7 +95,14 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, login, logout, startTokenRefreshCycle }}
+      value={{
+        user,
+        login,
+        logout,
+        startTokenRefreshCycle,
+        updateUser,
+        refreshAccessToken,
+      }}
     >
       {children}
     </UserContext.Provider>

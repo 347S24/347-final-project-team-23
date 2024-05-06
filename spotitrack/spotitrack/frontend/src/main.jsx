@@ -18,6 +18,9 @@ import PlaylistDetail from "./main/Dashboard/PlaylistDetail.jsx";
 import { UserProvider } from "./UserProvider.jsx";
 import NavigationBar from "./header/NavigationBar.jsx";
 import RecentTracksDetail from "./main/Dashboard/RecentTracksDetail.jsx";
+import ScrollToTop from "./ScrollToTop.jsx";
+import PlaylistHistory from "./main/Playlists/PlaylistHistory.jsx";
+
 function App() {
   const [mode, setMode] = useState("dark"); // Toggle between 'light' and 'dark'
 
@@ -29,6 +32,7 @@ function App() {
         <CssBaseline /> {/* Helps to apply consistent baseline styles */}
         <Router>
           <NavigationBar />
+          <ScrollToTop />
           <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -43,6 +47,10 @@ function App() {
             <Route path="/playlists" element={<Playlists />} />
             <Route path="/playlist" element={<PlaylistDetail />} />
             <Route path="/recent-tracks" element={<RecentTracksDetail />} />
+            <Route
+              path="/playlist-history/:playlistId"
+              element={<PlaylistHistory />}
+            />
           </Routes>
           <Footer />
         </Router>

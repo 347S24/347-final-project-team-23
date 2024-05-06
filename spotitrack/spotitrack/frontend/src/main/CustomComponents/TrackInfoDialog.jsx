@@ -15,19 +15,65 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
 import { useState } from "react";
 import PropTypes from "prop-types";
+import { useUser } from "../../UserProvider";
+import { useEffect } from "react";
+import PlaylistSelectionDialog from "./PlaylistSelectionDialog.jsx";
 
 TrackInfoDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   track: PropTypes.object.isRequired,
+  updateTrackSavedStatus: PropTypes.func.isRequired,
+  isSaved: PropTypes.bool.isRequired,
 };
 
-function TrackInfoDialog({ open, onClose, track }) {
-  const [isInLibrary, setIsInLibrary] = useState(false); // Assuming default state is not in library
+function TrackInfoDialog({
+  open,
+  onClose,
+  track,
+  updateTrackSavedStatus,
+  isSaved,
+}) {
+  const { user } = useUser();
+  const [isInLibrary, setIsInLibrary] = useState(track.isSaved);
+  const [playlistDialogOpen, setPlaylistDialogOpen] = useState(false);
 
-  const toggleInLibrary = () => {
-    // Placeholder for actual API call to add/remove track from library
-    setIsInLibrary(!isInLibrary);
+  useEffect(() => {
+    // This effect ensures that isInLibrary is updated whenever the track changes
+    setIsInLibrary(track.isSaved);
+  }, [track]);
+
+  const toggleInLibrary = async () => {
+    const newIsInLibrary = !isInLibrary;
+    setIsInLibrary(newIsInLibrary); // Optimistically update the UI
+    const method = newIsInLibrary ? "PUT" : "DELETE";
+    const headers = {
+      Authorization: `Bearer ${user.access_token}`,
+      "Content-Type": "application/json",
+    };
+
+    const response = await fetch(
+      `https://api.spotify.com/v1/me/tracks?ids=${track.id}`,
+      {
+        method,
+        headers,
+      }
+    );
+
+    if (!response.ok) {
+      console.error("Failed to update track library status");
+      setIsInLibrary(isInLibrary); // Revert the UI change on error
+    } else {
+      updateTrackSavedStatus(track.id, newIsInLibrary); // Update parent state on success
+    }
+  };
+
+  const handleOpenPlaylistDialog = () => {
+    setPlaylistDialogOpen(true);
+  };
+
+  const handleClosePlaylistDialog = () => {
+    setPlaylistDialogOpen(false);
   };
 
   const handleAddToPlaylist = () => {
@@ -35,6 +81,7 @@ function TrackInfoDialog({ open, onClose, track }) {
     console.log("Add to Playlist clicked");
   };
 
+  // console.log(track);
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="track-info-title">
       <DialogTitle id="track-info-title">
@@ -63,16 +110,16 @@ function TrackInfoDialog({ open, onClose, track }) {
           <CardContent sx={{ flexGrow: 1 }}>
             <Stack direction="column" spacing={2} mt={2}>
               <IconButton onClick={toggleInLibrary}>
-                {isInLibrary ? (
+                {isSaved ? (
                   <FavoriteIcon color="error" />
                 ) : (
                   <FavoriteBorderIcon />
                 )}
               </IconButton>
               <Typography variant="caption" color="text.secondary">
-                {isInLibrary ? "Remove" : "Add to Library"}
+                {isSaved ? "Remove" : "Add to Library"}
               </Typography>
-              <IconButton onClick={handleAddToPlaylist}>
+              <IconButton onClick={handleOpenPlaylistDialog}>
                 <LibraryAddIcon />
               </IconButton>
               <Typography variant="caption" color="text.secondary">
@@ -80,6 +127,11 @@ function TrackInfoDialog({ open, onClose, track }) {
               </Typography>
             </Stack>
           </CardContent>
+          <PlaylistSelectionDialog
+            open={playlistDialogOpen}
+            onClose={handleClosePlaylistDialog}
+            track={track}
+          />
           <CardMedia
             component="img"
             sx={{ width: 500, height: 500 }}

@@ -18,6 +18,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import { useUser } from "../../UserProvider.jsx";
+import CustomBadge from "./../CustomComponents/CustomBadge.jsx";
 
 PlaylistDetail.propTypes = {
   playlistId: PropTypes.string,
@@ -164,7 +165,8 @@ function PlaylistDetail(props) {
         <Grid container spacing={2}>
           {trackDetails.map((track, index) => (
             <Grid item xs={12} key={index}>
-              <Badge
+              <CustomBadge
+                number={index + 1}
                 badgeContent={index + 1}
                 max={999}
                 color="primary"
@@ -231,7 +233,7 @@ function PlaylistDetail(props) {
                     )}
                   </CardContent>
                 </Card>
-              </Badge>
+              </CustomBadge>
             </Grid>
           ))}
         </Grid>

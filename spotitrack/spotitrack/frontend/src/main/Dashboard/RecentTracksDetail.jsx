@@ -3,15 +3,13 @@ import { Box, Typography, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useUser } from "../../UserProvider";
 import RecentTrackCard from "../CustomComponents/RecentTrackCard";
-import TrackInfoDialog from "../CustomComponents/TrackInfoDialog";
 import Loading from "../Loading/Loading";
 import { useTheme } from "@emotion/react";
 
+// RecentTracksDetail.jsx
 function RecentTracksDetail() {
   const { user } = useUser();
   const [tracks, setTracks] = useState([]);
-  const [selectedTrack, setSelectedTrack] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
 
@@ -24,16 +22,42 @@ function RecentTracksDetail() {
       );
       if (!response.ok) throw new Error("Failed to fetch tracks");
       const data = await response.json();
-      setTracks(data.items);
+      const trackIds = data.items.map((item) => item.track.id).join(",");
+      const savedResponse = await fetch(
+        `https://api.spotify.com/v1/me/tracks/contains?ids=${trackIds}`,
+        { headers }
+      );
+      const savedStatus = await savedResponse.json();
+
+      const tracksWithSavedStatus = data.items.map((item, index) => ({
+        ...item,
+        isSaved: savedStatus[index],
+      }));
+
+      setTracks(tracksWithSavedStatus);
       setLoading(false);
     }
 
     fetchTracks();
   }, [user.access_token]);
 
-  const handleCardClick = (track) => {
-    setSelectedTrack(track);
-    setDialogOpen(true);
+  const toggleSavedState = async (trackId, isSaved) => {
+    const method = isSaved ? "DELETE" : "PUT";
+    const headers = {
+      Authorization: `Bearer ${user.access_token}`,
+      "Content-Type": "application/json",
+    };
+    await fetch(`https://api.spotify.com/v1/me/tracks?ids=${trackId}`, {
+      method,
+      headers,
+    });
+
+    // Update the local state to reflect the change
+    setTracks((tracks) =>
+      tracks.map((track) =>
+        track.track.id === trackId ? { ...track, isSaved: !isSaved } : track
+      )
+    );
   };
 
   if (loading) {
@@ -63,18 +87,12 @@ function RecentTracksDetail() {
             <RecentTrackCard
               track={item.track}
               height={300}
-              onClick={() => handleCardClick(item.track)}
+              isSaved={item.isSaved}
+              toggleSaved={() => toggleSavedState(item.track.id, item.isSaved)}
             />
           </Grid>
         ))}
       </Grid>
-      {selectedTrack && (
-        <TrackInfoDialog
-          open={dialogOpen}
-          onClose={() => setDialogOpen(false)}
-          track={selectedTrack}
-        />
-      )}
     </Box>
   );
 }

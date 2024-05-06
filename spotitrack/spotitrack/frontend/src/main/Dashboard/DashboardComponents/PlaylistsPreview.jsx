@@ -7,7 +7,7 @@ PlaylistsPreview.propTypes = {
   onExploreAll: PropTypes.func.isRequired,
 };
 function PlaylistsPreview({ playlists, onExploreAll }) {
-  console.log("Playlists: ", playlists);
+  // console.log("Playlists: ", playlists);
   return (
     <Box>
       <Typography variant="h4">Your Playlists</Typography>
