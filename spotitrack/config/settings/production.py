@@ -17,9 +17,9 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["hcientist.com"])
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "myproject",
-        "USER": "myprojectuser",
-        "PASSWORD": "password",
+        "NAME": "spotitack",
+        "USER": "salman",
+        "PASSWORD": "123456!a",
         "HOST": "localhost",
         "PORT": "",
     }
