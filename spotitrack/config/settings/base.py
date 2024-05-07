@@ -7,7 +7,7 @@ import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # spotitrack/
-APPS_DIR = BASE_DIR / "spotitrack" / "spotitrack"
+APPS_DIR = BASE_DIR / "spotitrack"
 env = environ.Env()
 
 READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
@@ -160,7 +160,7 @@ STATIC_ROOT = os.path.join(str(BASE_DIR / "staticfiles"))
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    str(APPS_DIR / "spotitrack" / "static"),
+    str(APPS_DIR / "static"),
     str(APPS_DIR / "templates" / "static"),
 ]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
