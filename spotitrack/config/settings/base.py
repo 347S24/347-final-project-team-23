@@ -308,3 +308,5 @@ environ.Env.read_env()  # Assuming you have a .env file at the root of your proj
 
 SPOTIFY_CLIENT_ID = env("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = env("SPOTIFY_CLIENT_SECRET")
+
+ALLOWED_HOSTS = ["164.92.86.130", "localhost", "0.0.0.0", "127.0.0.1"]
