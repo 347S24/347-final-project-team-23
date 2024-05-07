@@ -5,7 +5,6 @@ import {
   Typography,
   Box,
   IconButton,
-  Dialog,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";

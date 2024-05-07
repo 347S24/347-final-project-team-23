@@ -1,4 +1,4 @@
-import { Box, Typography, Grid, Paper, styled } from "@mui/material";
+import { Box, Grid, Paper, styled } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Loading from "../Loading/Loading.jsx";
@@ -21,6 +21,7 @@ const Item = styled(Paper)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
+  flex: 1,
 }));
 
 function Dashboard() {
@@ -104,8 +105,9 @@ function Dashboard() {
           sx={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
+            // alignItems: "center",
             justifyContent: "flex-start",
+            alignItems: "stretch",
           }}
         >
           {/* Welcome message */}

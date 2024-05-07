@@ -1,52 +1,46 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../../../UserProvider";
-import { Card, CardContent, CardMedia, Typography, Box } from "@mui/material";
+import { Card, CardMedia, Typography, Box } from "@mui/material";
 
 function UserBanner() {
-  const { user } = useUser();
+  const { updateUser, user } = useUser();
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch("https://api.spotify.com/v1/me", {
-          headers: {
-            Authorization: `Bearer ${user.access_token}`,
-          },
-        });
+    const cachedProfile = localStorage.getItem("spotifyProfile");
 
-        if (!res.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        const data = await res.json();
-        setProfile(data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    if (user?.access_token) {
+    if (cachedProfile) {
+      setProfile(JSON.parse(cachedProfile));
+    } else {
       fetchProfile();
     }
-  }, [user]);
+  }, [user.access_token]); // Depend on user.access_token to refetch if it changes
 
-  if (!profile) {
-    return <Typography>Loading...</Typography>;
-  }
+  async function fetchProfile() {
+    if (!user?.access_token || user.spotify_id) return;
 
-  // Select the highest resolution image available
-  const profileImageUrl =
-    profile.images.reduce((highest, image) => {
-      if (
-        !highest ||
-        (image.height > highest.height && image.width > highest.width)
-      ) {
-        return image;
+    try {
+      const res = await fetch("https://api.spotify.com/v1/me", {
+        headers: {
+          Authorization: `Bearer ${user.access_token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch user data");
       }
-      return highest;
-    }, null)?.url ||
-    "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228";
+
+      const data = await res.json();
+      setProfile(data);
+      localStorage.setItem("spotifyProfile", JSON.stringify(data));
+
+      if (!user.spotify_id) {
+        updateUser({ spotify_id: data.id });
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }
 
   if (!profile) {
     return <Typography>Loading...</Typography>;
@@ -69,7 +63,15 @@ function UserBanner() {
           borderRadius: "50%",
         }}
         image={
-          profileImageUrl ||
+          profile.images.reduce((highest, image) => {
+            if (
+              !highest ||
+              (image.height > highest.height && image.width > highest.width)
+            ) {
+              return image;
+            }
+            return highest;
+          }, null)?.url ||
           "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228"
         }
         alt="User avatar"

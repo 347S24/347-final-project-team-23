@@ -83,7 +83,7 @@ export const UserProvider = ({ children }) => {
   }, [user]);
 
   const startTokenRefreshCycle = useCallback(() => {
-    const interval = 1000 * 60 * 50; // 59 minutes
+    const interval = 1000 * 60 * 50; // 50 minutes
     const intervalId = setInterval(refreshAccessToken, interval);
     return () => clearInterval(intervalId);
   }, [refreshAccessToken]);

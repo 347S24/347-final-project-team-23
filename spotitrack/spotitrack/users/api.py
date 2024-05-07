@@ -80,6 +80,13 @@ def create_user(request, payload: UserIn):
     return {"users name": user.username}
 
 
+@api.post("/update_spotify_id")
+def update_spotify_id(request, payload: UserIn):
+    user = get_object_or_404(User, username=payload.username)
+    user.set_spotify_id(payload.spotify_id)
+    return {"spotify_id": user.spotify_id}
+
+
 @api.get("/users")
 def get_users(request, username: str):
     users = User.objects.all()
@@ -177,7 +184,7 @@ def get_user_playlists(request):
             playlist_id = playlist["id"]
             playlist_name = playlist["name"]
             tracks = playlist["tracks"]["total"]
-            snapshot_id = playlist["snapshot_id"]
+            snapshot_id = playlist["snapshot_id"].replace("/", "-")
 
             playlist_info.append(
                 {
@@ -234,26 +241,21 @@ def get_user_playlists(request):
 
 @api.get("/tracks/")
 def get_playlist_tracks(request, playlist_id: str):
-    # Retrieve the playlist from the database using the provided playlist_id
-
     client_credentials_manager = SpotifyClientCredentials(
         client_id=client_id, client_secret=client_secret
     )
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
-    # Get tracks from the playlist
     results = sp.playlist_tracks(playlist_id)
-    # Extract relevant information from tracks
 
     tracks_info = []
     for item in results["items"]:
-        track = item["track"]
-        minutes = track["duration_ms"] // 60000  # Integer division to get full minutes
-        seconds = (
-            track["duration_ms"] % 60000
-        ) // 1000  # Modulus to get remainder in milliseconds, then convert to seconds
-        duration_formatted = f"{minutes}:{seconds:02}"  # Converts ms to minutes and rounds to 2 decimal places
-        tracks_info.append(
-            {
+        track = item.get("track")
+        if track:  # Check if track is not None
+            minutes = track["duration_ms"] // 60000
+            seconds = (track["duration_ms"] % 60000) // 1000
+            duration_formatted = f"{minutes}:{seconds:02}"
+
+            track_info = {
                 "name": track["name"],
                 "id": track["id"],
                 "artists": [artist["name"] for artist in track["artists"]],
@@ -263,10 +265,11 @@ def get_playlist_tracks(request, playlist_id: str):
                     if track["album"]["images"]
                     else None
                 ),
-                "preview_url": track["preview_url"] if "preview_url" in track else None,
+                "preview_url": track.get("preview_url"),
                 "duration": duration_formatted,
             }
-        )
+            tracks_info.append(track_info)
+
     return tracks_info
 
 
@@ -329,40 +332,38 @@ def add_track_to_playlist(request, playlist_id):
 def get_playlist_history(request, playlist_id: str):
     playlist = get_object_or_404(Playlist, playlist_id=playlist_id)
     instances = PlaylistInstance.objects.filter(playlist=playlist).order_by(
-        "-date_added"
+        "date_added"
     )
     history = []
     previous_instance = None
 
     for instance in instances:
-        # Handle data correctly based on its type
-        if isinstance(instance.tracks, str):
-            try:
-                tracks = json.loads(instance.tracks)  # Decoding JSON here
-            except json.JSONDecodeError:
-                print("Error decoding JSON. Incorrect format.")
-                tracks = []  # Default to empty list if there's an error
-        else:
-            # Assuming it might be already a Python dict (not recommended)
-            tracks = instance.tracks or []
-
-        changes = (
-            instance.compare_to(previous_instance)
-            if previous_instance
-            else {"added": tracks, "removed": [], "reordered": []}
-        )
-        history.append(
-            {
-                "instance_id": instance.id,
-                "snapshot_id": instance.snapshot_id,
-                "date_added": instance.date_added.strftime("%Y-%m-%d %H:%M:%S"),
-                "changes": changes,
-                "tracks": tracks,
-            }
-        )
+        if previous_instance:
+            changes = previous_instance.compare_to(instance)
+            history.append(
+                {
+                    "instance_id": instance.id,
+                    "snapshot_id": instance.snapshot_id,
+                    "date_added": instance.date_added.strftime("%Y-%m-%d %H:%M:%S"),
+                    "changes": changes,
+                    "tracks": [
+                        track["id"] for track in instance.tracks
+                    ],  # Optionally list track IDs only
+                }
+            )
         previous_instance = instance
 
     return {"playlist_name": playlist.name, "history": history}
+
+
+@api.get("/playlistInstance/{snapshot_id}/")
+def get_playlist_instance(request, snapshot_id: str):
+    instance = get_object_or_404(PlaylistInstance, snapshot_id=snapshot_id)
+    return {
+        "snapshot_id": instance.snapshot_id,
+        "tracks": instance.tracks,
+        "date_added": instance.date_added.strftime("%Y-%m-%d %H:%M:%S"),
+    }
 
 
 #########################################################################
@@ -400,6 +401,8 @@ def request_user_authorization(request):
     user-library-modify
     user-library-read
     user-follow-modify
+    playlist-modify-public
+    playlist-modify-private
     """
     scope = scope.replace("\n", "")
 

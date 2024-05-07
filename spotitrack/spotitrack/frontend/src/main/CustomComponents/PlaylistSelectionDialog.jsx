@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -19,8 +19,9 @@ PlaylistSelectionDialog.propTypes = {
 function PlaylistSelectionDialog({ open, onClose, track }) {
   const [playlists, setPlaylists] = useState([]);
   const [loading, setLoading] = useState(false);
-  const user = useUser();
+  const { user } = useUser();
 
+  console.log("User: ", user);
   useEffect(() => {
     if (!open) return;
     setLoading(true);
@@ -36,19 +37,24 @@ function PlaylistSelectionDialog({ open, onClose, track }) {
 
   // Broken needs fixing
   const handleAddToPlaylist = async (playlistId) => {
-    console.log("playlistId: ", playlistId);
-    const response = await fetch(`/api/playlists/${playlistId}/add-track`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.access_token}`,
-      },
-      body: JSON.stringify({ uris: [track.uri].join(",") }),
-    });
+    const response = await fetch(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${user.access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uris: [`spotify:track:${track.id}`],
+        }),
+      }
+    );
+
     if (response.ok) {
-      onClose();
+      onClose(); // Close the dialog on success
     } else {
-      alert("Failed to add track to playlist.");
+      console.error("Failed to add track to playlist");
     }
   };
 

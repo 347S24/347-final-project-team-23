@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
 from .models import User, Playlist, PlaylistInstance
+
 # from django.contrib import admin
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
@@ -21,7 +22,18 @@ class UserAdmin(auth_admin.UserAdmin):
     add_form = UserAdminCreationForm
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("name", "email", "access_token", "refresh_token")}),
+        (
+            _("Personal info"),
+            {
+                "fields": (
+                    "name",
+                    "email",
+                    "access_token",
+                    "refresh_token",
+                    "spotify_id",
+                )
+            },
+        ),
         (
             _("Permissions"),
             {
@@ -38,6 +50,7 @@ class UserAdmin(auth_admin.UserAdmin):
     )
     list_display = ["username", "name", "is_superuser"]
     search_fields = ["name"]
+
 
 admin.site.register(Playlist)
 admin.site.register(PlaylistInstance)

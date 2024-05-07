@@ -1,6 +1,7 @@
 from ast import In
 from django.contrib.auth.models import AbstractUser
 from django.db.models import CharField
+from django.forms import JSONField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.db import models
@@ -24,6 +25,7 @@ class User(AbstractUser):
     password = CharField(max_length=200)
     access_token = CharField(max_length=500, blank=True, null=True)
     refresh_token = CharField(max_length=500, blank=True, null=True)
+    spotify_id = CharField(max_length=200, blank=True, null=True, default="")
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
@@ -47,6 +49,13 @@ class User(AbstractUser):
 
     def get_refresh_token(self):
         return self.refresh_token
+
+    def get_spotify_id(self):
+        return self.username
+
+    def set_spotify_id(self, spotify_id):
+        self.spotify_id = spotify_id
+        self.save()
 
 
 class Playlist(models.Model):
@@ -74,27 +83,29 @@ class Playlist(models.Model):
 class PlaylistInstance(models.Model):
     playlist = models.ForeignKey("Playlist", on_delete=models.RESTRICT, null=True)
     snapshot_id = CharField(max_length=200, blank=True, null=True)
-    tracks = TextField(blank=True, null=True)
+    tracks = models.JSONField(blank=True, null=True)
     date_added = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     # spotify identifier spotifyuri # e.g. spotify:playlist:sdfbjhsgkeawjesgrd
     def compare_to(self, previous_instance):
         if not previous_instance:
-            return {"added": json.loads(self.tracks), "removed": [], "reordered": []}
+            return {
+                "added": [track["id"] for track in self.tracks],
+                "removed": [],
+                "reordered": [],
+            }
 
-        current_tracks = json.loads(self.tracks)
-        previous_tracks = json.loads(previous_instance.tracks)
+        current_ids = [track["id"] for track in self.tracks]
+        previous_ids = [track["id"] for track in previous_instance.tracks]
 
-        current_ids = {track["id"]: track for track in current_tracks}
-        previous_ids = {track["id"]: track for track in previous_tracks}
+        removed = list(set(current_ids) - set(previous_ids))
+        added = list(set(previous_ids) - set(current_ids))
 
-        added = [track for track in current_tracks if track["id"] not in previous_ids]
-        removed = [track for track in previous_tracks if track["id"] not in current_ids]
-        reordered = [
-            track["id"]
-            for track in current_tracks
-            if track["id"] in previous_ids
-            and current_tracks.index(track) != previous_tracks.index(track)
-        ]
+        # Detect reordered
+        reordered = []
+        common_ids = set(current_ids) & set(previous_ids)
+        for track_id in common_ids:
+            if current_ids.index(track_id) != previous_ids.index(track_id):
+                reordered.append(track_id)
 
         return {"added": added, "removed": removed, "reordered": reordered}

@@ -30,7 +30,6 @@ function NavigationBar() {
       { label: "Dashboard", to: "/dashboard" },
       { label: "Playlists", to: "/playlists" },
       { label: "Recent Tracks", to: "/recent-tracks" },
-      { label: "Top Tracks", to: "/top-tracks" },
     ];
   } else {
     settings = ["Login"];
@@ -72,6 +71,11 @@ function NavigationBar() {
       handleCloseUserMenu(); // Assuming you have this function to close the menu
     }
   };
+
+  const handleSmallNavClick = (route) => {
+    navigate(route);
+    handleCloseNavMenu();
+  };
   // component
   return (
     // Small (mobile) nav bar
@@ -80,12 +84,15 @@ function NavigationBar() {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-            <MenuItem onClick={() => navigate("/")}>
+            <MenuItem
+              onClick={() => {
+                user ? navigate("/dashboard") : navigate("/");
+              }}
+            >
               <Typography
                 variant="h6"
                 noWrap
                 component="a"
-                href="/"
                 sx={{
                   mr: 2,
                   display: { xs: "none", md: "flex" },
@@ -130,7 +137,10 @@ function NavigationBar() {
                 }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <MenuItem
+                    key={page}
+                    onClick={() => handleSmallNavClick(page.to)}
+                  >
                     <Typography textAlign="center">{page.label}</Typography>
                   </MenuItem>
                 ))}
@@ -143,7 +153,9 @@ function NavigationBar() {
               variant="h5"
               noWrap
               component="a"
-              href="/"
+              onClick={() => {
+                user ? navigate("/dashboard") : navigate("/");
+              }}
               sx={{
                 mr: 2,
                 display: { xs: "flex", md: "none" },

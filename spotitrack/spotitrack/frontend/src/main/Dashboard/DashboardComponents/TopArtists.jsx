@@ -99,7 +99,7 @@ function TopArtists() {
         {artists.slice(0, numToShow).map((artist) => (
           <Grid
             item
-            xs={6}
+            {...(numToShow === 1 ? { xs: 12 } : { xs: 6 })}
             key={artist.id}
             sx={{
               display: "flex",

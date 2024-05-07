@@ -76,11 +76,6 @@ function TrackInfoDialog({
     setPlaylistDialogOpen(false);
   };
 
-  const handleAddToPlaylist = () => {
-    // Placeholder for opening a dialog to add to a playlist
-    console.log("Add to Playlist clicked");
-  };
-
   // console.log(track);
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="track-info-title">
