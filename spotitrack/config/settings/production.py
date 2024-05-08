@@ -21,11 +21,11 @@ ALLOWED_HOSTS += [
 
 # DATABASES
 # ------------------------------------------------------------------------------
-# DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
-DATABASES = {
+DATABASES["default"]["CONN_MAX_AGE"] = env.int("CONN_MAX_AGE", default=60)
+DATABASES += {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "spotitack",
+        "NAME": "spotitrack",
         "USER": "salman",
         "PASSWORD": "123456!a",
         "HOST": "localhost",
