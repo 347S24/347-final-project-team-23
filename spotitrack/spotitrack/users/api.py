@@ -390,7 +390,7 @@ def request_user_authorization(request):
     Returns:
     - str: The authorization URL to redirect the user to.
     """
-    redirect_uri = "http://127.0.0.1:8000/users/api/callback/"
+    redirect_uri = "http://spotitrack.tech/users/api/callback/"
     scope = """
     user-read-private
     user-read-email
@@ -437,7 +437,7 @@ def handle_callback(request, code: str):
     Returns:
     - dict: JSON response containing access token information.
     """
-    redirect_uri = "http://164.92.86.130:8000/users/api/callback/"  # Make sure this matches the redirect URI used in authorization request
+    redirect_uri = "http://spotitrack.tech/users/api/callback/"  # Make sure this matches the redirect URI used in authorization request
 
     # Exchange authorization code for access token
     token_url = "https://accounts.spotify.com/api/token"
