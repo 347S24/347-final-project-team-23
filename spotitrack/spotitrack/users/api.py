@@ -437,7 +437,7 @@ def handle_callback(request, code: str):
     Returns:
     - dict: JSON response containing access token information.
     """
-    redirect_uri = "http://spotitrack.tech/users/api/callback/"  # Make sure this matches the redirect URI used in authorization request
+    redirect_uri = "https://spotitrack.tech/users/api/callback/"  # Make sure this matches the redirect URI used in authorization request
 
     # Exchange authorization code for access token
     token_url = "https://accounts.spotify.com/api/token"
@@ -460,7 +460,7 @@ def handle_callback(request, code: str):
         request.user.set_access_token(token_data["access_token"])
         request.user.set_refresh_token(token_data["refresh_token"])
         request.user.save()
-        return redirect("http://164.92.86.130:8000/complete_signup")
+        return redirect("https://spotitrack.tech/complete_signup")
         return token_data
     else:
         return {
